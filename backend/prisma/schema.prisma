@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model sexo {
+  pk_id   Int      @id @default(autoincrement())
+  nombre  String   @unique
+
+  personas persona[]
+}
+
+model persona {
+  pk_id              Int     @id @default(autoincrement())
+  fk_id_sexo         Int
+  nombre             String
+  apellido           String
+  fecha_nacimiento   DateTime
+  correo_electronico String  @unique
+  telefono           String
+  direccion          String
+  tipo               tipo_persona
+
+  sexo     sexo  @relation(fields: [fk_id_sexo], references: [pk_id])
+  docente  docente?
+}
+
+enum tipo_persona {
+  docente
+  director
+  administrativo
+  estudiante
+}
+
+model docente {
+  pk_id              Int      @id @default(autoincrement())
+  fk_id_persona      Int      @unique
+  horas_max_semana   Decimal  @db.Decimal(5, 2)
+  fecha_ingreso      DateTime
+  activo             Boolean
+
+  persona           persona         @relation(fields: [fk_id_persona], references: [pk_id])
+  disponibilidades  disponibilidad[]
+  asignaciones asignacion[]
+}
+
+model disponibilidad {
+  pk_id         Int        @id @default(autoincrement())
+  fk_id_docente Int
+  dia_semana    dia_semana
+  hora_inicio   DateTime   @db.Time
+  hora_fin      DateTime   @db.Time
+
+  docente docente @relation(fields: [fk_id_docente], references: [pk_id])
+}
+
+enum dia_semana {
+  lunes
+  martes
+  miercoles
+  jueves
+  viernes
+}
+
+model materia {
+  pk_id         Int       @id @default(autoincrement())
+  nombre        String    @unique
+  clave         String    @unique
+  require_lab   Boolean
+  require_pc    Boolean
+  observaciones String?
+
+ asignaciones asignacion[]
+}
+
+enum tipo_aula {
+  conferencias
+  taller
+  normal
+  laboratorio
+}
+
+model aula {
+  pk_id            Int             @id @default(autoincrement())
+  nombre           String          @unique
+  capacidad        Int
+  tipo             tipo_aula
+
+  asignaciones asignacion[]
+}
+
+model anio_escolar {
+  pk_id       Int         @id @default(autoincrement())
+  nombre      String
+  fecha_inicio DateTime
+  fecha_fin   DateTime
+
+  horarios horario_generado[]
+}
+
+model curso {
+  pk_id       Int       @id @default(autoincrement())
+  nombre      String    @unique
+  descripcion String?
+
+  asignaciones asignacion[]
+}
+
+// model seccion {
+//   pk_id       Int       @id @default(autoincrement())
+//   fk_id_curso Int
+//   nombre      String
+//   descripcion String?
+
+//   curso               curso     @relation(fields: [fk_id_curso], references: [pk_id])
+//   grupos_academicos   grupo_academico[]
+//   @@unique([fk_id_curso, nombre])
+// }
+
+// model grupo_academico {
+//   pk_id         Int         @id @default(autoincrement())
+//   fk_id_seccion Int
+//   fk_id_periodo Int
+
+//   seccion   seccion               @relation(fields: [fk_id_seccion], references: [pk_id])
+//   periodo   anio_escolar     @relation(fields: [fk_id_periodo], references: [pk_id])
+//   @@unique([fk_id_seccion, fk_id_periodo])
+// }
+
+
+model asignacion {
+  pk_id             Int       @id @default(autoincrement())
+  fk_id_curso       Int         
+  fk_id_aula        Int?
+  fk_id_materia     Int?
+  fk_id_docente     Int?
+  fk_id_bloque      Int
+  
+  aula        aula?        @relation(fields: [fk_id_aula], references: [pk_id])
+  curso         curso @relation(fields: [fk_id_curso], references: [pk_id])
+  materia     materia?     @relation(fields: [fk_id_materia], references: [pk_id])
+  docente     docente?     @relation(fields: [fk_id_docente], references: [pk_id])
+  bloque      bloque      @relation(fields: [fk_id_bloque], references: [pk_id])
+  horarios horario_generado[]
+}
+
+enum tipo_bloque {
+  clase
+  receso
+  almuerzo
+}
+
+model bloque {
+  pk_id         Int     @id @default(autoincrement())
+  tipo          tipo_bloque
+  hora_inicio   DateTime  @db.Time
+  hora_fin      DateTime  @db.Time
+  observacion   String?
+
+  asignaciones  asignacion[]
+}
+
+model horario_generado {
+  pk_id         Int              @id @default(autoincrement())
+  fk_id_periodo Int  
+  dia           dia_semana
+  asignaciones  asignacion[]
+  
+  periodo      anio_escolar @relation(fields: [fk_id_periodo], references: [pk_id])
+}

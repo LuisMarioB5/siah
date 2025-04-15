@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgres:15
+    container_name: siash-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: siash_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - siash-network
+
+  backend:
+    container_name: siash-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/siash_db
+    ports:
+      - '3001:3001'
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - siash-network
+    command: npx nest start --watch
+
+  frontend:
+    container_name: siash-frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - siash-network
+    command: npm run start:dev
+
+volumes:
+  db-data:
+
+networks:
+  siash-network:
+    driver: bridge
