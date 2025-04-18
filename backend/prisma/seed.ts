@@ -7,6 +7,8 @@ import {
   seedAulas,
   seedAniosEscolares,
   seedCursos,
+  seedCursoMaterias,
+  seedDocenteMaterias,
 } from './seeds/index.seed';
 
 const prisma = new PrismaClient();
@@ -21,7 +23,9 @@ async function main() {
   await seedAulas();
   await seedAniosEscolares();
   await seedCursos();
-
+  await seedCursoMaterias();
+  await seedDocenteMaterias();
+  
   console.log('✅ Seeding general completo.');
 }
 

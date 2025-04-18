@@ -5,6 +5,8 @@ import { seedMateria } from './materia.seed';
 import { seedAulas } from './aula.seed';
 import { seedAniosEscolares } from './anio-escolar.seed';
 import { seedCursos } from './curso.seed';
+import { seedCursoMaterias } from './curso-materias.seed';
+import { seedDocenteMaterias } from './docente-materias.seed';
 
 export {
   seedSexo,
@@ -14,4 +16,6 @@ export {
   seedAulas,
   seedAniosEscolares,
   seedCursos,
+  seedCursoMaterias,
+  seedDocenteMaterias,
 };

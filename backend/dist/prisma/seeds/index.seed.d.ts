@@ -5,4 +5,5 @@ import { seedMateria } from './materia.seed';
 import { seedAulas } from './aula.seed';
 import { seedAniosEscolares } from './anio-escolar.seed';
 import { seedCursos } from './curso.seed';
-export { seedSexo, seedPersonas, seedDocentes, seedMateria, seedAulas, seedAniosEscolares, seedCursos, };
+import { seedCursoMaterias } from './curso-materia.seed';
+export { seedSexo, seedPersonas, seedDocentes, seedMateria, seedAulas, seedAniosEscolares, seedCursos, seedCursoMaterias, };

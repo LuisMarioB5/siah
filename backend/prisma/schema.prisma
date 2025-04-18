@@ -36,36 +36,6 @@ enum tipo_persona {
   estudiante
 }
 
-model docente {
-  pk_id              Int      @id @default(autoincrement())
-  fk_id_persona      Int      @unique
-  horas_max_semana   Decimal  @db.Decimal(5, 2)
-  fecha_ingreso      DateTime
-  activo             Boolean
-
-  persona           persona         @relation(fields: [fk_id_persona], references: [pk_id])
-  disponibilidades  disponibilidad[]
-  asignaciones asignacion[]
-}
-
-model disponibilidad {
-  pk_id         Int        @id @default(autoincrement())
-  fk_id_docente Int
-  dia_semana    dia_semana
-  hora_inicio   DateTime   @db.Time
-  hora_fin      DateTime   @db.Time
-
-  docente docente @relation(fields: [fk_id_docente], references: [pk_id])
-}
-
-enum dia_semana {
-  lunes
-  martes
-  miercoles
-  jueves
-  viernes
-}
-
 model materia {
   pk_id         Int       @id @default(autoincrement())
   nombre        String    @unique
@@ -75,7 +45,53 @@ model materia {
   observaciones String?
 
  asignaciones asignacion[]
+ docentes docente_materia[]
+ cursos curso_materia[]
 }
+
+model docente {
+  pk_id              Int      @id @default(autoincrement())
+  fk_id_persona      Int      @unique
+  horas_max_semana   Decimal  @db.Decimal(5, 2)
+  fecha_ingreso      DateTime
+  activo             Boolean
+
+  persona           persona         @relation(fields: [fk_id_persona], references: [pk_id])
+  asignaciones asignacion[]
+  materias docente_materia[]
+}
+
+model docente_materia {
+  pk_id         Int     @id @default(autoincrement())
+  fk_id_docente Int
+  fk_id_materia Int
+
+  docente docente @relation(fields: [fk_id_docente], references: [pk_id])
+  materia materia @relation(fields: [fk_id_materia], references: [pk_id])
+
+  @@unique([fk_id_docente, fk_id_materia])
+}
+
+model curso {
+  pk_id       Int       @id @default(autoincrement())
+  nombre      String    @unique
+  descripcion String?
+
+  asignaciones asignacion[]
+  materias curso_materia[]
+}
+
+model curso_materia {
+  pk_id         Int     @id @default(autoincrement())
+  fk_id_curso   Int
+  fk_id_materia Int
+
+  curso   curso   @relation(fields: [fk_id_curso], references: [pk_id])
+  materia materia @relation(fields: [fk_id_materia], references: [pk_id])
+
+  @@unique([fk_id_curso, fk_id_materia])
+}
+
 
 enum tipo_aula {
   conferencias
@@ -102,46 +118,17 @@ model anio_escolar {
   horarios horario_generado[]
 }
 
-model curso {
-  pk_id       Int       @id @default(autoincrement())
-  nombre      String    @unique
-  descripcion String?
-
-  asignaciones asignacion[]
-}
-
-// model seccion {
-//   pk_id       Int       @id @default(autoincrement())
-//   fk_id_curso Int
-//   nombre      String
-//   descripcion String?
-
-//   curso               curso     @relation(fields: [fk_id_curso], references: [pk_id])
-//   grupos_academicos   grupo_academico[]
-//   @@unique([fk_id_curso, nombre])
-// }
-
-// model grupo_academico {
-//   pk_id         Int         @id @default(autoincrement())
-//   fk_id_seccion Int
-//   fk_id_periodo Int
-
-//   seccion   seccion               @relation(fields: [fk_id_seccion], references: [pk_id])
-//   periodo   anio_escolar     @relation(fields: [fk_id_periodo], references: [pk_id])
-//   @@unique([fk_id_seccion, fk_id_periodo])
-// }
-
-
 model asignacion {
   pk_id             Int       @id @default(autoincrement())
-  fk_id_curso       Int         
+  fk_id_curso       Int?         
   fk_id_aula        Int?
   fk_id_materia     Int?
   fk_id_docente     Int?
   fk_id_bloque      Int
+  justificacion     String?
   
   aula        aula?        @relation(fields: [fk_id_aula], references: [pk_id])
-  curso         curso @relation(fields: [fk_id_curso], references: [pk_id])
+  curso       curso?       @relation(fields: [fk_id_curso], references: [pk_id])
   materia     materia?     @relation(fields: [fk_id_materia], references: [pk_id])
   docente     docente?     @relation(fields: [fk_id_docente], references: [pk_id])
   bloque      bloque      @relation(fields: [fk_id_bloque], references: [pk_id])
@@ -162,6 +149,14 @@ model bloque {
   observacion   String?
 
   asignaciones  asignacion[]
+}
+
+enum dia_semana {
+  lunes
+  martes
+  miercoles
+  jueves
+  viernes
 }
 
 model horario_generado {

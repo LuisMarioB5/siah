@@ -24,6 +24,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/siash_db
     ports:
       - '3001:3001'
+      - "5555:5555"
     depends_on:
       - db
     volumes:

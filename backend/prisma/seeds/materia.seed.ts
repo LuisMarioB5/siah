@@ -26,7 +26,7 @@ export async function seedMateria() {
     { nombre: 'Física Teórica', clave: 'FIS201', require_lab: false, require_pc: false },
     { nombre: 'Literatura General', clave: 'LEN201', require_lab: false, require_pc: false },
     { nombre: 'Ética y Ciudadanía', clave: 'ETI101', require_lab: false, require_pc: false },
-];
+  ];
 
 
   for (const materia of materias) {
