@@ -120,19 +120,21 @@ model anio_escolar {
 
 model asignacion {
   pk_id             Int       @id @default(autoincrement())
-  fk_id_curso       Int?         
-  fk_id_aula        Int?
-  fk_id_materia     Int?
-  fk_id_docente     Int?
   fk_id_bloque      Int
+  fk_id_horario     Int
+  fk_id_aula        Int?
+  fk_id_curso       Int?         
+  fk_id_docente     Int?
+  fk_id_materia     Int?
   justificacion     String?
+  esta_activo       Boolean   @default(true)
   
-  aula        aula?        @relation(fields: [fk_id_aula], references: [pk_id])
-  curso       curso?       @relation(fields: [fk_id_curso], references: [pk_id])
-  materia     materia?     @relation(fields: [fk_id_materia], references: [pk_id])
-  docente     docente?     @relation(fields: [fk_id_docente], references: [pk_id])
-  bloque      bloque      @relation(fields: [fk_id_bloque], references: [pk_id])
-  horarios horario_generado[]
+  bloque      bloque            @relation(fields: [fk_id_bloque], references: [pk_id])
+  horarios    horario_generado  @relation(fields: [fk_id_horario], references: [pk_id])
+  aula        aula?             @relation(fields: [fk_id_aula], references: [pk_id])
+  curso       curso?            @relation(fields: [fk_id_curso], references: [pk_id])
+  docente     docente?          @relation(fields: [fk_id_docente], references: [pk_id])
+  materia     materia?          @relation(fields: [fk_id_materia], references: [pk_id])
 }
 
 enum tipo_bloque {
@@ -163,7 +165,8 @@ model horario_generado {
   pk_id         Int              @id @default(autoincrement())
   fk_id_periodo Int  
   dia           dia_semana
+  esta_activo   Boolean         @default(true)
+
   asignaciones  asignacion[]
-  
   periodo      anio_escolar @relation(fields: [fk_id_periodo], references: [pk_id])
 }

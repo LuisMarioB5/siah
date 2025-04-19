@@ -1,136 +1,121 @@
 import { Injectable } from '@nestjs/common';
 import { BloqueDto, GenerarHorarioDto } from './dto/generar-horario.dto';
 import { PrismaService } from 'src/prisma/primsa.service';
-import { aula, tipo_aula, tipo_bloque } from '@prisma/client';
+import { dia_semana, horario_generado, tipo_bloque } from '@prisma/client';
 
 @Injectable()
 export class HorarioService {
-    constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    async generarHorario(dto: GenerarHorarioDto) {
-        // // 1. Revisar el periodo del horario
-        // const anioEscolar = await this.prisma.anio_escolar.findUnique({
-        //   where: { pk_id: dto.anioEscolarId },
-        // });
-        // if (!anioEscolar) {
-        //   throw new Error('Se necesita un año escolar para vincular al horario.');
-        // }
-      
-        // // 2. Verificar que haya al menos un bloque
-        // if (!dto.bloques.length) {
-        //   throw new Error('Debe proveerse al menos un bloque en el horario.');
-        // }
-      
-        // // 3. Verificar que haya al menos un bloque de tipo clase
-        // const contieneBloqueClase = dto.bloques.some(b => b.tipo === tipo_bloque.clase);
-        // if (!contieneBloqueClase) {
-        //   throw new Error('Debe haber al menos un bloque de tipo "clase".');
-        // }
-      
-        // // 4. Consultar materias
-        // const materias = await this.prisma.materia.findMany({
-        //   where: { pk_id: { in: dto.materiasIds } },
-        // });
-        // if (!materias.length) {
-        //   throw new Error('No hay materias disponibles.');
-        // }
-      
-        // // 5. Consultar docentes
-        // const docentes = await this.prisma.docente.findMany({
-        //   where: { pk_id: { in: dto.docentesIds } },
-        // });
-        // if (!docentes.length) {
-        //   throw new Error('No hay docentes disponibles.');
-        // }
-      
-        // // 6. Consultar aulas
-        // const aulas = await this.prisma.aula.findMany({
-        //   where: { pk_id: { in: dto.aulasIds } },
-        // });
-        // if (!aulas.length) {
-        //   throw new Error('No hay aulas disponibles.');
-        // }
-      
-        // // 7. Crear horario
-        // const horario = [];
-        // let indiceBloque = 0;
-        // let indiceMateria = 0;
-      
-        // for (const dia of dto.dias) {
-        //   const asignaciones = [];
-      
-        //   for (const bloqueDto of dto.bloques) {
-        //     // Obtener o crear el bloque (puedes reutilizar el método que hicimos antes)
-        //     const bloque = await this.obtenerOBloquearBloque(bloqueDto);
-      
-        //     if (bloque.tipo === tipo_bloque.clase) {
-        //       const materia = materias[indiceMateria % materias.length];
-        //       const docente = docentes[indiceMateria % docentes.length];
-      
-        //       // Seleccionar aula compatible
-        //       let aula: aula | undefined;
-        //       if (materia.require_lab) {
-        //         aula = aulas.find(a => a.tipo === tipo_aula.laboratorio);
-        //       } else {
-        //         aula = aulas.find(a => a.tipo !== tipo_aula.laboratorio);
-        //       }
-      
-        //       if (!aula) {
-        //         continue;
-        //       }
-      
-        //       asignaciones.push({
-        //         aulaId: aula.pk_id,
-        //         materiaId: materia.pk_id,
-        //         docenteId: docente.pk_id,
-        //         bloqueId: bloque.pk_id,
-        //       });
-      
-        //       indiceMateria++;
-        //     } else {
-        //       // No es clase, igual se agrega el bloque para reflejar receso o almuerzo
-        //       asignaciones.push({
-        //         bloqueId: bloque.pk_id,
-        //       });
-        //     }
-      
-        //     indiceBloque++;
-        //   }
-      
-        //   horario.push({
-        //     dia_semana: dia,
-        //     asignaciones,
-        //     anioEscolar,
-        //   });
-        // }
-      
-        // return horario;
+  async generarHorario(dto: GenerarHorarioDto) {
+    const horarios: horario_generado[] = [];
 
-        return dto;
-      }
-      
+    for(const dia of dto.dias) {    
+      const horario_generado = await this.obtenerOCrearHorario(dto.anioEscolarId, dia);
+      horario_generado.esta_activo = true;
+      horarios.push(horario_generado);
 
-    private async obtenerOBloquearBloque(dto: BloqueDto) {
-        const bloqueExistente = await this.prisma.bloque.findFirst({
-        where: {
-            tipo: dto.tipo,
-            hora_inicio: dto.hora_inicio,
-            hora_fin: dto.hora_fin,
-          },
-        });
+      for(const bloqueDTO of dto.bloques) {
+        const bloque = await this.obtenerOCrearBloque(bloqueDTO);
 
-        if (bloqueExistente) {
-          return bloqueExistente; // Reutiliza el existente
+        if(bloque.tipo === tipo_bloque.clase) {
+          for(const cursoId of dto.cursoIds) {
+            const curso = await this.prisma.curso.findUnique({
+              where: {
+                pk_id: cursoId,
+              }
+            });
+            
+            await this.prisma.asignacion.updateMany({
+              where: {
+                fk_id_bloque: bloque.pk_id,
+                fk_id_curso: curso.pk_id
+              },
+              data: {
+                esta_activo: false
+              }
+            });
+            
+            // TODO: Desde aqui hay que modificar y aplicar lo 'inteligente'
+            const materiaRelacionada = await this.prisma.curso_materia.findFirst({
+              where: { fk_id_curso: cursoId },
+              include: { materia: true }
+            });
+            
+            const docentesRelacionados = await this.prisma.docente_materia.findMany({
+              where: { fk_id_materia: materiaRelacionada?.fk_id_materia }
+            });
+            
+            const docenteAsignado = docentesRelacionados[0];
+            
+            const aula = await this.prisma.aula.findFirst();
+            // TODO: Hasta aqui se debe de modificar y aplicar lo 'inteligente'
+            
+            await this.prisma.asignacion.create({
+              data: {
+                fk_id_aula: aula.pk_id,
+                fk_id_bloque: bloque.pk_id,
+                fk_id_curso: curso.pk_id,
+                fk_id_docente: docenteAsignado.pk_id,
+                fk_id_horario: horario_generado.pk_id,
+                fk_id_materia: materiaRelacionada.pk_id,
+                justificacion: 'Asignado automáticamente según disponibilidad'
+              }
+            })
+          }
+        } else {
+          // Receso o almuerzo
+          await this.prisma.asignacion.create({
+            data: {
+              fk_id_bloque: bloque.pk_id,
+              fk_id_horario: horario_generado.pk_id,
+              justificacion: 'Bloque reservado para ' + bloque.tipo
+            }
+          })
         }
-
-        // Si no existe, lo creamos
-        return this.prisma.bloque.create({
-          data: {
-            tipo: dto.tipo,
-            hora_inicio: dto.hora_inicio,
-            hora_fin: dto.hora_fin,
-            observacion: dto.observacion,
-          },
-        });
+      }
     }
+    
+    return { mensaje: 'Horario generado', horarios };
+  }
+    
+  private async obtenerOCrearHorario(periodoId: number, dia: dia_semana) {
+    const horarioExistente = await this.prisma.horario_generado.findFirst({
+      where: {
+        fk_id_periodo: periodoId,
+        dia,
+      },
+    });
+  
+    if (horarioExistente) return horarioExistente;
+  
+    return await this.prisma.horario_generado.create({
+      data: {
+        fk_id_periodo: periodoId,
+        dia,
+      },
+    });
+  }
+  
+      
+  private async obtenerOCrearBloque(dto: BloqueDto) {
+    const bloqueExistente = await this.prisma.bloque.findFirst({
+      where: {
+        tipo: dto.tipo,
+        hora_inicio: dto.hora_inicio,
+        hora_fin: dto.hora_fin,
+      },
+    });
+
+    if (bloqueExistente) return bloqueExistente; 
+
+    return this.prisma.bloque.create({
+      data: {
+        tipo: dto.tipo,
+        hora_inicio: dto.hora_inicio,
+        hora_fin: dto.hora_fin,
+        observacion: dto.observacion,
+      },
+    });
+  } 
 }

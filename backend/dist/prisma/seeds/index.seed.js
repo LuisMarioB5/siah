@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.seedCursoMaterias = exports.seedCursos = exports.seedAniosEscolares = exports.seedAulas = exports.seedMateria = exports.seedDocentes = exports.seedPersonas = exports.seedSexo = void 0;
+exports.seedDocenteMaterias = exports.seedCursoMaterias = exports.seedCursos = exports.seedAniosEscolares = exports.seedAulas = exports.seedMateria = exports.seedDocentes = exports.seedPersonas = exports.seedSexo = void 0;
 const sexo_seed_1 = require("./sexo.seed");
 Object.defineProperty(exports, "seedSexo", { enumerable: true, get: function () { return sexo_seed_1.seedSexo; } });
 const persona_seed_1 = require("./persona.seed");
@@ -15,6 +15,8 @@ const anio_escolar_seed_1 = require("./anio-escolar.seed");
 Object.defineProperty(exports, "seedAniosEscolares", { enumerable: true, get: function () { return anio_escolar_seed_1.seedAniosEscolares; } });
 const curso_seed_1 = require("./curso.seed");
 Object.defineProperty(exports, "seedCursos", { enumerable: true, get: function () { return curso_seed_1.seedCursos; } });
-const curso_materia_seed_1 = require("./curso-materia.seed");
-Object.defineProperty(exports, "seedCursoMaterias", { enumerable: true, get: function () { return curso_materia_seed_1.seedCursoMaterias; } });
+const curso_materias_seed_1 = require("./curso-materias.seed");
+Object.defineProperty(exports, "seedCursoMaterias", { enumerable: true, get: function () { return curso_materias_seed_1.seedCursoMaterias; } });
+const docente_materias_seed_1 = require("./docente-materias.seed");
+Object.defineProperty(exports, "seedDocenteMaterias", { enumerable: true, get: function () { return docente_materias_seed_1.seedDocenteMaterias; } });
 //# sourceMappingURL=index.seed.js.map

@@ -13,6 +13,7 @@ async function main() {
     await (0, index_seed_1.seedAniosEscolares)();
     await (0, index_seed_1.seedCursos)();
     await (0, index_seed_1.seedCursoMaterias)();
+    await (0, index_seed_1.seedDocenteMaterias)();
     console.log('✅ Seeding general completo.');
 }
 main()

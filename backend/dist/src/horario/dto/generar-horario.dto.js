@@ -21,12 +21,14 @@ __decorate([
     __metadata("design:type", String)
 ], BloqueDto.prototype, "tipo", void 0);
 __decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
 ], BloqueDto.prototype, "hora_inicio", void 0);
 __decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
 ], BloqueDto.prototype, "hora_fin", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
@@ -41,29 +43,15 @@ __decorate([
     __metadata("design:type", Number)
 ], GenerarHorarioDto.prototype, "anioEscolarId", void 0);
 __decorate([
-    (0, class_validator_1.IsInt)(),
-    __metadata("design:type", Number)
-], GenerarHorarioDto.prototype, "cursoId", void 0);
-__decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsInt)({ each: true }),
     __metadata("design:type", Array)
-], GenerarHorarioDto.prototype, "materiasIds", void 0);
-__decorate([
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsInt)({ each: true }),
-    __metadata("design:type", Array)
-], GenerarHorarioDto.prototype, "docentesIds", void 0);
+], GenerarHorarioDto.prototype, "cursoIds", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsEnum)(client_1.dia_semana, { each: true }),
     __metadata("design:type", Array)
 ], GenerarHorarioDto.prototype, "dias", void 0);
-__decorate([
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsInt)({ each: true }),
-    __metadata("design:type", Array)
-], GenerarHorarioDto.prototype, "aulasIds", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),
