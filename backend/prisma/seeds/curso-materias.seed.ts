@@ -2,105 +2,59 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const cursoMateriasMap = {
+  '1º A': ['MAT101', 'MAT102', 'FIS101', 'LEN101', 'EDU101'],
+  '1º B': ['MAT101', 'MAT102', 'FIS101', 'LEN101', 'EDU101'],
+  '1º C': ['MAT101', 'MAT102', 'FIS101', 'LEN101', 'EDU101'],
+  '2º A': ['FIS102', 'LEN102', 'INF101', 'BIO101', 'QUI101', 'HIS101', 'EDU102'],
+  '2º B': ['FIS102', 'LEN102', 'INF101', 'BIO101', 'QUI101', 'HIS101', 'EDU102'],
+  '2º C': ['FIS102', 'LEN102', 'INF101', 'BIO101', 'QUI101', 'HIS101', 'EDU102'],
+  '3º A': ['INF102', 'BIO102', 'QUI102', 'HIS102', 'MAT201', 'FIS201', 'LEN201', 'ETI101'],
+  '3º B': ['INF102', 'BIO102', 'QUI102', 'HIS102', 'MAT201', 'FIS201', 'LEN201', 'ETI101'],
+  '3º C': ['INF102', 'BIO102', 'QUI102', 'HIS102', 'MAT201', 'FIS201', 'LEN201', 'ETI101'],
+};
+
 export async function seedCursoMaterias() {
-  console.log('🌱 Iniciando seeding para las materias que se imparten por curso...');
+  console.log('🌱 Iniciando seeding de materias por curso...');
 
-  const primero = [
-    // Seccion A
-    {fk_id_curso: 1, fk_id_materia: 1},
-    {fk_id_curso: 1, fk_id_materia: 2},
-    {fk_id_curso: 1, fk_id_materia: 3},
-    {fk_id_curso: 1, fk_id_materia: 5},
-    {fk_id_curso: 1, fk_id_materia: 15},
+  for (const [cursoNombre, clavesMaterias] of Object.entries(cursoMateriasMap)) {
+    const curso = await prisma.curso.findUnique({ where: { nombre: cursoNombre } });
+    if (!curso) {
+      console.warn(`❌ Curso no encontrado: ${cursoNombre}`);
+      continue;
+    }
 
-    {fk_id_curso: 2, fk_id_materia: 1},
-    {fk_id_curso: 2, fk_id_materia: 2},
-    {fk_id_curso: 2, fk_id_materia: 3},
-    {fk_id_curso: 2, fk_id_materia: 5},
-    {fk_id_curso: 2, fk_id_materia: 15},
+    for (const clave of clavesMaterias) {
+      const materia = await prisma.materia.findUnique({ where: { clave } });
+      if (!materia) {
+        console.warn(`❌ Materia no encontrada: ${clave}`);
+        continue;
+      }
 
-    {fk_id_curso: 3, fk_id_materia: 1},
-    {fk_id_curso: 3, fk_id_materia: 2},
-    {fk_id_curso: 3, fk_id_materia: 3},
-    {fk_id_curso: 3, fk_id_materia: 5},
-    {fk_id_curso: 3, fk_id_materia: 15},
-  ]
+      await prisma.curso_materia.upsert({
+        where: {
+          fk_id_curso_fk_id_materia: {
+            fk_id_curso: curso.pk_id,
+            fk_id_materia: materia.pk_id,
+          },
+        },
+        update: {},
+        create: {
+          fk_id_curso: curso.pk_id,
+          fk_id_materia: materia.pk_id,
+        },
+      });
+    }
+  }
 
-  const segundo = [
-    // Seccion A
-    {fk_id_curso: 4, fk_id_materia: 4},
-    {fk_id_curso: 4, fk_id_materia: 6},
-    {fk_id_curso: 4, fk_id_materia: 7},
-    {fk_id_curso: 4, fk_id_materia: 9},
-    {fk_id_curso: 4, fk_id_materia: 11},
-    {fk_id_curso: 4, fk_id_materia: 13},
-    {fk_id_curso: 4, fk_id_materia: 16},
-    
-    // Seccion B
-    {fk_id_curso: 5, fk_id_materia: 4},
-    {fk_id_curso: 5, fk_id_materia: 6},
-    {fk_id_curso: 5, fk_id_materia: 7},
-    {fk_id_curso: 5, fk_id_materia: 9},
-    {fk_id_curso: 5, fk_id_materia: 11},
-    {fk_id_curso: 5, fk_id_materia: 13},
-    {fk_id_curso: 5, fk_id_materia: 16},
-    
-    // Seccion C
-    {fk_id_curso: 6, fk_id_materia: 4},
-    {fk_id_curso: 6, fk_id_materia: 6},
-    {fk_id_curso: 6, fk_id_materia: 7},
-    {fk_id_curso: 6, fk_id_materia: 9},
-    {fk_id_curso: 6, fk_id_materia: 11},
-    {fk_id_curso: 6, fk_id_materia: 13},
-    {fk_id_curso: 6, fk_id_materia: 16},
-  ]
-
-  const tercero = [
-    // Seccion A
-    {fk_id_curso: 7, fk_id_materia: 8},
-    {fk_id_curso: 7, fk_id_materia: 10},
-    {fk_id_curso: 7, fk_id_materia: 12},
-    {fk_id_curso: 7, fk_id_materia: 14},
-    {fk_id_curso: 7, fk_id_materia: 17},
-    {fk_id_curso: 7, fk_id_materia: 18},
-    {fk_id_curso: 7, fk_id_materia: 19},
-    {fk_id_curso: 7, fk_id_materia: 20},
-    
-    // Seccion B
-    {fk_id_curso: 8, fk_id_materia: 8},
-    {fk_id_curso: 8, fk_id_materia: 10},
-    {fk_id_curso: 8, fk_id_materia: 12},
-    {fk_id_curso: 8, fk_id_materia: 14},
-    {fk_id_curso: 8, fk_id_materia: 17},
-    {fk_id_curso: 8, fk_id_materia: 18},
-    {fk_id_curso: 8, fk_id_materia: 19},
-    {fk_id_curso: 8, fk_id_materia: 20},
-    
-    // Seccion C
-    {fk_id_curso: 9, fk_id_materia: 8},
-    {fk_id_curso: 9, fk_id_materia: 10},
-    {fk_id_curso: 9, fk_id_materia: 12},
-    {fk_id_curso: 9, fk_id_materia: 14},
-    {fk_id_curso: 9, fk_id_materia: 17},
-    {fk_id_curso: 9, fk_id_materia: 18},
-    {fk_id_curso: 9, fk_id_materia: 19},
-    {fk_id_curso: 9, fk_id_materia: 20},
-  ]
-
-  await prisma.curso_materia.createMany({
-    data: [...primero, ...segundo, ...tercero],
-    skipDuplicates: true,
-  });
-
-  console.log('✅ Seeding de las materias que se imparten por curso completo.');
+  console.log('✅ Seeding de materias por curso completado.');
 }
 
 if (require.main === module) {
   seedCursoMaterias()
     .catch((e) => {
-      throw e;
+      console.error(e);
+      process.exit(1);
     })
-    .finally(async () => {
-      await prisma.$disconnect();
-    });
+    .finally(() => prisma.$disconnect());
 }

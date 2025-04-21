@@ -59,17 +59,31 @@ model docente {
   persona           persona         @relation(fields: [fk_id_persona], references: [pk_id])
   asignaciones asignacion[]
   materias docente_materia[]
+  disponibilidades disponibilidad_docente[]
 }
 
 model docente_materia {
   pk_id         Int     @id @default(autoincrement())
   fk_id_docente Int
   fk_id_materia Int
+  tiene_especialidad Boolean @default(false)
+  experiencia_anios Int @default(0)
 
   docente docente @relation(fields: [fk_id_docente], references: [pk_id])
   materia materia @relation(fields: [fk_id_materia], references: [pk_id])
 
   @@unique([fk_id_docente, fk_id_materia])
+}
+
+model disponibilidad_docente {
+  pk_id         Int     @id @default(autoincrement())
+  fk_id_docente Int
+  fk_id_bloque  Int
+
+  docente docente @relation(fields: [fk_id_docente], references: [pk_id])
+  bloque  bloque  @relation(fields: [fk_id_bloque], references: [pk_id])
+
+  @@unique([fk_id_docente, fk_id_bloque])
 }
 
 model curso {
@@ -105,6 +119,10 @@ model aula {
   nombre           String          @unique
   capacidad        Int
   tipo             tipo_aula
+  posicion         Int
+  tiene_pc         Boolean @default(false)
+  tiene_proyector  Boolean @default(false)
+  tiene_lab        Boolean @default(false)
 
   asignaciones asignacion[]
 }
@@ -128,6 +146,8 @@ model asignacion {
   fk_id_materia     Int?
   justificacion     String?
   esta_activo       Boolean   @default(true)
+  puntuacion_total Int?
+  puntuacion_detalle String?
   
   bloque      bloque            @relation(fields: [fk_id_bloque], references: [pk_id])
   horarios    horario_generado  @relation(fields: [fk_id_horario], references: [pk_id])
@@ -151,6 +171,7 @@ model bloque {
   observacion   String?
 
   asignaciones  asignacion[]
+  disponibilidades_docente disponibilidad_docente[]
 }
 
 enum dia_semana {
@@ -163,10 +184,10 @@ enum dia_semana {
 
 model horario_generado {
   pk_id         Int              @id @default(autoincrement())
-  fk_id_periodo Int  
+  fk_id_anio_escolar Int  
   dia           dia_semana
   esta_activo   Boolean         @default(true)
 
   asignaciones  asignacion[]
-  periodo      anio_escolar @relation(fields: [fk_id_periodo], references: [pk_id])
+  anio_escolar      anio_escolar @relation(fields: [fk_id_anio_escolar], references: [pk_id])
 }

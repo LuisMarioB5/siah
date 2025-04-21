@@ -34,6 +34,10 @@ export declare class AsignacionCatalogoService {
         nombre: string;
         tipo: import(".prisma/client").$Enums.tipo_aula;
         capacidad: number;
+        posicion: number;
+        tiene_pc: boolean;
+        tiene_proyector: boolean;
+        tiene_lab: boolean;
     }[]>;
     getAniosEscolares(): Promise<{
         pk_id: number;

@@ -8,11 +8,20 @@ export async function seedAulas() {
 
   const tipos = Object.values(tipo_aula);
 
-  const aulas = Array.from({ length: 10 }).map((_, index) => ({
-    nombre: String(index + 1).padStart(3, '0'),
-    capacidad: faker.number.int({ min: 20, max: 30 }),
-    tipo: faker.helpers.arrayElement(tipos),
-  }));
+  const aulas = Array.from({ length: 10 }).map((_, index) => {
+    const tipo = faker.helpers.arrayElement(tipos);
+    
+    // Puedes usar el tipo para condicionar los valores booleanos si quieres más realismo
+    return {
+      nombre: String(index + 1).padStart(3, '0'),
+      capacidad: faker.number.int({ min: 20, max: 30 }),
+      tipo,
+      posicion: faker.number.int({ min: 1, max: 300 }),
+      tiene_pc: faker.datatype.boolean(),
+      tiene_proyector: faker.datatype.boolean(),
+      tiene_lab: tipo === tipo_aula.laboratorio
+    };
+  });
 
   for (const aula of aulas) {
     await prisma.aula.upsert({

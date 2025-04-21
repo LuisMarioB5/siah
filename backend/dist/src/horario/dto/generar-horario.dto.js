@@ -9,32 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GenerarHorarioDto = exports.BloqueDto = void 0;
+exports.GenerarHorarioDto = void 0;
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
+const bloque_dto_1 = require("./bloque.dto");
+const criterios_dto_1 = require("./criterios.dto");
 const client_1 = require("@prisma/client");
-class BloqueDto {
-}
-exports.BloqueDto = BloqueDto;
-__decorate([
-    (0, class_validator_1.IsEnum)(client_1.tipo_bloque),
-    __metadata("design:type", String)
-], BloqueDto.prototype, "tipo", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", String)
-], BloqueDto.prototype, "hora_inicio", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", String)
-], BloqueDto.prototype, "hora_fin", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], BloqueDto.prototype, "observacion", void 0);
 class GenerarHorarioDto {
 }
 exports.GenerarHorarioDto = GenerarHorarioDto;
@@ -55,7 +35,12 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),
-    (0, class_transformer_1.Type)(() => BloqueDto),
+    (0, class_transformer_1.Type)(() => bloque_dto_1.BloqueDto),
     __metadata("design:type", Array)
 ], GenerarHorarioDto.prototype, "bloques", void 0);
+__decorate([
+    (0, class_validator_1.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => criterios_dto_1.CriteriaDto),
+    __metadata("design:type", criterios_dto_1.CriteriaDto)
+], GenerarHorarioDto.prototype, "criterios", void 0);
 //# sourceMappingURL=generar-horario.dto.js.map

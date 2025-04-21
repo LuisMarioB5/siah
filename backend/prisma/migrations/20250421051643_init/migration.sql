@@ -61,8 +61,19 @@ CREATE TABLE "docente_materia" (
     "pk_id" SERIAL NOT NULL,
     "fk_id_docente" INTEGER NOT NULL,
     "fk_id_materia" INTEGER NOT NULL,
+    "tiene_especialidad" BOOLEAN NOT NULL DEFAULT false,
+    "experiencia_anios" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "docente_materia_pkey" PRIMARY KEY ("pk_id")
+);
+
+-- CreateTable
+CREATE TABLE "disponibilidad_docente" (
+    "pk_id" SERIAL NOT NULL,
+    "fk_id_docente" INTEGER NOT NULL,
+    "fk_id_bloque" INTEGER NOT NULL,
+
+    CONSTRAINT "disponibilidad_docente_pkey" PRIMARY KEY ("pk_id")
 );
 
 -- CreateTable
@@ -89,6 +100,10 @@ CREATE TABLE "aula" (
     "nombre" TEXT NOT NULL,
     "capacidad" INTEGER NOT NULL,
     "tipo" "tipo_aula" NOT NULL,
+    "posicion" INTEGER NOT NULL,
+    "tiene_pc" BOOLEAN NOT NULL DEFAULT false,
+    "tiene_proyector" BOOLEAN NOT NULL DEFAULT false,
+    "tiene_lab" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "aula_pkey" PRIMARY KEY ("pk_id")
 );
@@ -106,13 +121,16 @@ CREATE TABLE "anio_escolar" (
 -- CreateTable
 CREATE TABLE "asignacion" (
     "pk_id" SERIAL NOT NULL,
-    "fk_id_curso" INTEGER,
-    "fk_id_aula" INTEGER,
-    "fk_id_materia" INTEGER,
-    "fk_id_docente" INTEGER,
     "fk_id_bloque" INTEGER NOT NULL,
     "fk_id_horario" INTEGER NOT NULL,
+    "fk_id_aula" INTEGER,
+    "fk_id_curso" INTEGER,
+    "fk_id_docente" INTEGER,
+    "fk_id_materia" INTEGER,
     "justificacion" TEXT,
+    "esta_activo" BOOLEAN NOT NULL DEFAULT true,
+    "puntuacion_total" INTEGER,
+    "puntuacion_detalle" TEXT,
 
     CONSTRAINT "asignacion_pkey" PRIMARY KEY ("pk_id")
 );
@@ -131,7 +149,7 @@ CREATE TABLE "bloque" (
 -- CreateTable
 CREATE TABLE "horario_generado" (
     "pk_id" SERIAL NOT NULL,
-    "fk_id_periodo" INTEGER NOT NULL,
+    "fk_id_anio_escolar" INTEGER NOT NULL,
     "dia" "dia_semana" NOT NULL,
     "esta_activo" BOOLEAN NOT NULL DEFAULT true,
 
@@ -157,6 +175,9 @@ CREATE UNIQUE INDEX "docente_fk_id_persona_key" ON "docente"("fk_id_persona");
 CREATE UNIQUE INDEX "docente_materia_fk_id_docente_fk_id_materia_key" ON "docente_materia"("fk_id_docente", "fk_id_materia");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "disponibilidad_docente_fk_id_docente_fk_id_bloque_key" ON "disponibilidad_docente"("fk_id_docente", "fk_id_bloque");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "curso_nombre_key" ON "curso"("nombre");
 
 -- CreateIndex
@@ -178,22 +199,16 @@ ALTER TABLE "docente_materia" ADD CONSTRAINT "docente_materia_fk_id_docente_fkey
 ALTER TABLE "docente_materia" ADD CONSTRAINT "docente_materia_fk_id_materia_fkey" FOREIGN KEY ("fk_id_materia") REFERENCES "materia"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "disponibilidad_docente" ADD CONSTRAINT "disponibilidad_docente_fk_id_docente_fkey" FOREIGN KEY ("fk_id_docente") REFERENCES "docente"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "disponibilidad_docente" ADD CONSTRAINT "disponibilidad_docente_fk_id_bloque_fkey" FOREIGN KEY ("fk_id_bloque") REFERENCES "bloque"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "curso_materia" ADD CONSTRAINT "curso_materia_fk_id_curso_fkey" FOREIGN KEY ("fk_id_curso") REFERENCES "curso"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "curso_materia" ADD CONSTRAINT "curso_materia_fk_id_materia_fkey" FOREIGN KEY ("fk_id_materia") REFERENCES "materia"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_aula_fkey" FOREIGN KEY ("fk_id_aula") REFERENCES "aula"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_curso_fkey" FOREIGN KEY ("fk_id_curso") REFERENCES "curso"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_materia_fkey" FOREIGN KEY ("fk_id_materia") REFERENCES "materia"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_docente_fkey" FOREIGN KEY ("fk_id_docente") REFERENCES "docente"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_bloque_fkey" FOREIGN KEY ("fk_id_bloque") REFERENCES "bloque"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -202,4 +217,16 @@ ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_bloque_fkey" FOREIGN K
 ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_horario_fkey" FOREIGN KEY ("fk_id_horario") REFERENCES "horario_generado"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "horario_generado" ADD CONSTRAINT "horario_generado_fk_id_periodo_fkey" FOREIGN KEY ("fk_id_periodo") REFERENCES "anio_escolar"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_aula_fkey" FOREIGN KEY ("fk_id_aula") REFERENCES "aula"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_curso_fkey" FOREIGN KEY ("fk_id_curso") REFERENCES "curso"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_docente_fkey" FOREIGN KEY ("fk_id_docente") REFERENCES "docente"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "asignacion" ADD CONSTRAINT "asignacion_fk_id_materia_fkey" FOREIGN KEY ("fk_id_materia") REFERENCES "materia"("pk_id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "horario_generado" ADD CONSTRAINT "horario_generado_fk_id_anio_escolar_fkey" FOREIGN KEY ("fk_id_anio_escolar") REFERENCES "anio_escolar"("pk_id") ON DELETE RESTRICT ON UPDATE CASCADE;
