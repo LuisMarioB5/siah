@@ -5,12 +5,7 @@ export declare class HorarioController {
     constructor(horarioService: HorarioService);
     generarHorario(dto: GenerarHorarioDto): Promise<{
         mensaje: string;
-        resultados: {
-            cursoId: number;
-            horarios: {
-                dia: import(".prisma/client").dia_semana;
-                asignaciones: import(".prisma/client").asignacion[];
-            }[];
-        }[];
+        resultado: any[];
+        advertencias: any[];
     }>;
 }

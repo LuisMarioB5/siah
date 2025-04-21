@@ -1,6 +1,30 @@
-// src/horario/dto/criteria.dto.ts
 import { IsInt, IsBoolean, IsString, IsArray, ValidateNested, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export class DocenteCriteria {
+  @IsInt() 
+  antiguedad: number;
+  
+  @IsInt() 
+  disponibilidad: number;
+  
+  @IsInt() 
+  experiencia: number;
+  
+  @IsInt() 
+  especialidad: number;
+}
+
+export class AulaCriteria {
+  @IsInt()
+  capacidad: number;
+  
+  @IsInt()
+  equipamiento: number;
+  
+  @IsInt()
+  ubicacion: number;
+}
 
 export class CustomCriteria {
   @IsString()
@@ -10,23 +34,28 @@ export class CustomCriteria {
   puntos: number;
 }
 
+export class OpcionesAvanzadas {
+  @IsBoolean()
+  balancearCarga: boolean;
+  
+  @IsBoolean()
+  minimizarDesplazamientos: boolean;
+  
+  @IsBoolean()
+  horasConsecutivas: boolean;
+  
+  @IsBoolean()
+  especializacion: boolean;
+}
+
 export class CriteriaDto {
   @ValidateNested()
-  @Type(() => Object)
-  docente: {
-    antiguedad: number;
-    disponibilidad: number;
-    experiencia: number;
-    especialidad: number;
-  };
+  @Type(() => DocenteCriteria)
+  docente: DocenteCriteria
 
   @ValidateNested()
-  @Type(() => Object)
-  aula: {
-    capacidad: number;
-    equipamiento: number;
-    ubicacion: number;
-  };
+  @Type(() => AulaCriteria)
+  aula: AulaCriteria
 
   @IsArray()
   @ValidateNested({ each: true })
@@ -34,13 +63,8 @@ export class CriteriaDto {
   personalizados: CustomCriteria[];
 
   @ValidateNested()
-  @Type(() => Object)
-  opcionesAvanzadas: {
-    balancearCarga: boolean;
-    minimizarDesplazamientos: boolean;
-    horasConsecutivas: boolean;
-    especializacion: boolean;
-  };
+  @Type(() => OpcionesAvanzadas)
+  opcionesAvanzadas: OpcionesAvanzadas
 
   @IsInt()
   maxHorasDocente: number;

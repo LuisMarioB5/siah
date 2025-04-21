@@ -40,8 +40,8 @@ model materia {
   pk_id         Int       @id @default(autoincrement())
   nombre        String    @unique
   clave         String    @unique
-  require_lab   Boolean
-  require_pc    Boolean
+  requiere_lab   Boolean
+  requiere_pc    Boolean
   observaciones String?
 
  asignaciones asignacion[]
@@ -83,7 +83,7 @@ model disponibilidad_docente {
   docente docente @relation(fields: [fk_id_docente], references: [pk_id])
   bloque  bloque  @relation(fields: [fk_id_bloque], references: [pk_id])
 
-  @@unique([fk_id_docente, fk_id_bloque])
+  @@unique([fk_id_docente, fk_id_bloque], name: "fk_id_docente_fk_id_bloque")
 }
 
 model curso {
@@ -105,7 +105,6 @@ model curso_materia {
 
   @@unique([fk_id_curso, fk_id_materia])
 }
-
 
 enum tipo_aula {
   conferencias

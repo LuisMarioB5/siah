@@ -10,7 +10,8 @@ import { CriteriaDto } from './criterios.dto';
 import { dia_semana } from '@prisma/client';
 
 export class GenerarHorarioDto {
-  @IsInt() anioEscolarId: number;
+  @IsInt() 
+  anioEscolarId: number;
 
   @IsArray() @IsInt({ each: true })
   cursoIds: number[];

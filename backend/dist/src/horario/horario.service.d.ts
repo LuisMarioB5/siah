@@ -1,26 +1,15 @@
 import { PrismaService } from 'src/prisma/primsa.service';
 import { GenerarHorarioDto } from './dto/generar-horario.dto';
-import { BloqueDto } from './dto/bloque.dto';
-import { dia_semana, asignacion } from '@prisma/client';
-export { BloqueDto };
+import { HorarioBuilderService } from './services/horario-builder.service';
+import { CriteriosEvaluadorService } from './services/criterios-evaluador.service';
 export declare class HorarioService {
-    private readonly prisma;
-    constructor(prisma: PrismaService);
+    private prisma;
+    private evaluador;
+    private builder;
+    constructor(prisma: PrismaService, evaluador: CriteriosEvaluadorService, builder: HorarioBuilderService);
     generarHorario(dto: GenerarHorarioDto): Promise<{
         mensaje: string;
-        resultados: {
-            cursoId: number;
-            horarios: {
-                dia: dia_semana;
-                asignaciones: asignacion[];
-            }[];
-        }[];
+        resultado: any[];
+        advertencias: any[];
     }>;
-    private _getOrCreateHorario;
-    private _markHorarioActivo;
-    private _getOrCreateBloque;
-    private _deactivateExisting;
-    private _pickRandomMateria;
-    private _pickBestDocente;
-    private _pickBestAula;
 }

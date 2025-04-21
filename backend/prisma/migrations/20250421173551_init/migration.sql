@@ -38,8 +38,8 @@ CREATE TABLE "materia" (
     "pk_id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
     "clave" TEXT NOT NULL,
-    "require_lab" BOOLEAN NOT NULL,
-    "require_pc" BOOLEAN NOT NULL,
+    "requiere_lab" BOOLEAN NOT NULL,
+    "requiere_pc" BOOLEAN NOT NULL,
     "observaciones" TEXT,
 
     CONSTRAINT "materia_pkey" PRIMARY KEY ("pk_id")

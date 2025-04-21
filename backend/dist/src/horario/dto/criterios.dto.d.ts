@@ -1,26 +1,29 @@
+export declare class DocenteCriteria {
+    antiguedad: number;
+    disponibilidad: number;
+    experiencia: number;
+    especialidad: number;
+}
+export declare class AulaCriteria {
+    capacidad: number;
+    equipamiento: number;
+    ubicacion: number;
+}
 export declare class CustomCriteria {
     nombre: string;
     puntos: number;
 }
+export declare class OpcionesAvanzadas {
+    balancearCarga: boolean;
+    minimizarDesplazamientos: boolean;
+    horasConsecutivas: boolean;
+    especializacion: boolean;
+}
 export declare class CriteriaDto {
-    docente: {
-        antiguedad: number;
-        disponibilidad: number;
-        experiencia: number;
-        especialidad: number;
-    };
-    aula: {
-        capacidad: number;
-        equipamiento: number;
-        ubicacion: number;
-    };
+    docente: DocenteCriteria;
+    aula: AulaCriteria;
     personalizados: CustomCriteria[];
-    opcionesAvanzadas: {
-        balancearCarga: boolean;
-        minimizarDesplazamientos: boolean;
-        horasConsecutivas: boolean;
-        especializacion: boolean;
-    };
+    opcionesAvanzadas: OpcionesAvanzadas;
     maxHorasDocente: number;
     maxVecesDocente: number;
     umbralMinimo: number;

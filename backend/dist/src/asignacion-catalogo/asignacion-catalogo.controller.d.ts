@@ -6,8 +6,8 @@ export declare class AsignacionCatalogoController {
         pk_id: number;
         nombre: string;
         clave: string;
-        require_lab: boolean;
-        require_pc: boolean;
+        requiere_lab: boolean;
+        requiere_pc: boolean;
         observaciones: string | null;
     }[]>;
     getDocentes(): Promise<({

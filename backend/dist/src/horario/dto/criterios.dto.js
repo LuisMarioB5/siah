@@ -9,9 +9,43 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CriteriaDto = exports.CustomCriteria = void 0;
+exports.CriteriaDto = exports.OpcionesAvanzadas = exports.CustomCriteria = exports.AulaCriteria = exports.DocenteCriteria = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
+class DocenteCriteria {
+}
+exports.DocenteCriteria = DocenteCriteria;
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], DocenteCriteria.prototype, "antiguedad", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], DocenteCriteria.prototype, "disponibilidad", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], DocenteCriteria.prototype, "experiencia", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], DocenteCriteria.prototype, "especialidad", void 0);
+class AulaCriteria {
+}
+exports.AulaCriteria = AulaCriteria;
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], AulaCriteria.prototype, "capacidad", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], AulaCriteria.prototype, "equipamiento", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], AulaCriteria.prototype, "ubicacion", void 0);
 class CustomCriteria {
 }
 exports.CustomCriteria = CustomCriteria;
@@ -23,18 +57,37 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CustomCriteria.prototype, "puntos", void 0);
+class OpcionesAvanzadas {
+}
+exports.OpcionesAvanzadas = OpcionesAvanzadas;
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], OpcionesAvanzadas.prototype, "balancearCarga", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], OpcionesAvanzadas.prototype, "minimizarDesplazamientos", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], OpcionesAvanzadas.prototype, "horasConsecutivas", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], OpcionesAvanzadas.prototype, "especializacion", void 0);
 class CriteriaDto {
 }
 exports.CriteriaDto = CriteriaDto;
 __decorate([
     (0, class_validator_1.ValidateNested)(),
-    (0, class_transformer_1.Type)(() => Object),
-    __metadata("design:type", Object)
+    (0, class_transformer_1.Type)(() => DocenteCriteria),
+    __metadata("design:type", DocenteCriteria)
 ], CriteriaDto.prototype, "docente", void 0);
 __decorate([
     (0, class_validator_1.ValidateNested)(),
-    (0, class_transformer_1.Type)(() => Object),
-    __metadata("design:type", Object)
+    (0, class_transformer_1.Type)(() => AulaCriteria),
+    __metadata("design:type", AulaCriteria)
 ], CriteriaDto.prototype, "aula", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
@@ -44,8 +97,8 @@ __decorate([
 ], CriteriaDto.prototype, "personalizados", void 0);
 __decorate([
     (0, class_validator_1.ValidateNested)(),
-    (0, class_transformer_1.Type)(() => Object),
-    __metadata("design:type", Object)
+    (0, class_transformer_1.Type)(() => OpcionesAvanzadas),
+    __metadata("design:type", OpcionesAvanzadas)
 ], CriteriaDto.prototype, "opcionesAvanzadas", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
