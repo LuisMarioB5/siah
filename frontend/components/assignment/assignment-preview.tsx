@@ -132,55 +132,80 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {hours?.map((hour: string) => (
-                        <TableRow key={hour}>
-                          <TableCell className="font-medium">{hour}</TableCell>
-                          {days.map((day: string) => {
-                            const cell = scheduleForCourse?.[day]?.[hour];
-                            if (cell?.isBreak) {
-                              return (
-                                <TableCell
-                                  key={`${day}-${hour}`}
-                                  className="bg-muted/50 text-center font-medium"
-                                >
-                                  {cell.name}
-                                </TableCell>
-                              );
-                            }
+                      {hours?.map((hour: string) => {
+                        const isBreakRow = days.every((day: string) => scheduleForCourse?.[day]?.[hour]?.isBreak);
+                        const breakCell = scheduleForCourse?.[days[0]]?.[hour]; // Tomamos el primero para mostrar nombre
 
-                            if (cell) {
-                              return (
-                                <TableCell
-                                  key={`${day}-${hour}`}
-                                  className={cn(
-                                    "p-2 cursor-pointer transition-colors",
-                                    cell.isNew && !cell.edited ? "bg-green-50 dark:bg-green-950/30" : "",
-                                    cell.edited ? "bg-amber-50 dark:bg-amber-950/30" : "",
-                                    editMode ? "hover:bg-muted" : "",
-                                  )}
-                                  onClick={() => editMode && handleEditCell(day, hour)}
-                                >
-                                  <div className="font-medium">{cell.subject}</div>
-                                  <div className="text-sm text-muted-foreground">{cell.teacher}</div>
-                                  <div className="flex justify-between">
-                                    <div className="text-xs text-muted-foreground">Aula: {cell.room}</div>
-                                  </div>
-                                </TableCell>
-                              );
-                            }
+                        return (
+                          <TableRow key={hour}>
+                            <TableCell className="font-medium">{hour}</TableCell>
 
-                            return (
+                            {isBreakRow ? (
                               <TableCell
-                                key={`${day}-${hour}`}
-                                className="text-center text-muted-foreground"
+                                colSpan={days.length}
+                                className="bg-muted/50 text-center font-medium"
                               >
-                                —
+                                {breakCell?.name}
                               </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      ))}
+                            ) : (
+                              days.map((day: string) => {
+                                const cell = scheduleForCourse?.[day]?.[hour];
+
+                                console.log({cell})
+
+                                if (cell) {
+                                  if(cell.tipo && cell.tipo === 'recursos' && cell.motivo) {
+                                    return (
+                                      <TableCell
+                                        key={`${day}-${hour}`}
+                                        className={cn(
+                                          "p-2 cursor-pointer transition-colors",
+                                          "bg-amber-50 dark:bg-amber-950/30",
+                                          editMode ? "hover:bg-muted" : "",
+                                        )}
+                                        onClick={() => editMode && handleEditCell(day, hour)}
+                                      >
+                                        <div className="font-medium">Falta de Recursos</div>
+                                        <div className="text-sm text-muted-foreground">{cell.motivo}</div>
+                                      </TableCell>
+                                    );
+                                  }
+
+                                  return (
+                                    <TableCell
+                                      key={`${day}-${hour}`}
+                                      className={cn(
+                                        "p-2 cursor-pointer transition-colors",
+                                        cell.isNew && !cell.edited ? "bg-green-50 dark:bg-green-950/30" : "",
+                                        cell.edited ? "bg-amber-50 dark:bg-amber-950/30" : "",
+                                        editMode ? "hover:bg-muted" : "",
+                                      )}
+                                      onClick={() => editMode && handleEditCell(day, hour)}
+                                    >
+                                      <div className="font-medium">{cell.subject}</div>
+                                      <div className="text-sm text-muted-foreground">{cell.teacher}</div>
+                                      <div className="flex justify-between">
+                                        <div className="text-xs text-muted-foreground">Aula: {cell.room}</div>
+                                      </div>
+                                    </TableCell>
+                                  );
+                                }
+
+                                return (
+                                  <TableCell
+                                    key={`${day}-${hour}`}
+                                    className="text-center text-muted-foreground"
+                                  >
+                                    —
+                                  </TableCell>
+                                );
+                              })
+                            )}
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
+
                   </Table>
                 </div>
               ) : (
@@ -479,10 +504,15 @@ function convertAllSchedulesFromBackend(data: HorarioMock): Record<string, any> 
             isBreak: true,
             name: "RECESO",
           };
-        } else if (bh.bloque.tipo === "almuerzo" || bh.materia == null) {
+        } else if (bh.bloque.tipo === "almuerzo") {
           schedule[day][timeSlot] = {
             isBreak: true,
             name: "ALMUERZO",
+          };
+        } else if(!bh.materia) {
+          schedule[day][timeSlot] = {
+            tipo: bh.tipo,
+            motivo: bh.motivo,
           };
         } else {
           schedule[day][timeSlot] = {

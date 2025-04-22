@@ -47,7 +47,7 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
         id: newId,
         tipo: "clase",
         hora_inicio: "16:00",
-        hora_fin: "13:45",
+        hora_fin: "16:45",
         observacion: `Nuevo Bloque`,
       },
     ])
@@ -85,7 +85,7 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
       <div className="space-y-2">
         {timeBlocks.map((block, index) => (
           <div key={block.id} className="flex items-center gap-2 p-2 border rounded-md">
-            <Select value={block.tipo} onValueChange={(value) => updateTimeBlock(block.id, "type", value)}>
+            <Select value={block.tipo} onValueChange={(value: string) => updateTimeBlock(block.id, "tipo", value)}>
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
@@ -105,7 +105,7 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
                   id={`start-time-${block.id}`}
                   type="time"
                   value={block.hora_inicio}
-                  onChange={(e) => updateTimeBlock(block.id, "startTime", e.target.value)}
+                  onChange={(e) => updateTimeBlock(block.id, "hora_inicio", e.target.value)}
                 />
               </div>
               <div className="flex flex-col">
@@ -116,7 +116,7 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
                   id={`end-time-${block.id}`}
                   type="time"
                   value={block.hora_fin}
-                  onChange={(e) => updateTimeBlock(block.id, "endTime", e.target.value)}
+                  onChange={(e) => updateTimeBlock(block.id, "hora_fin", e.target.value)}
                 />
               </div>
             </div>
@@ -125,7 +125,7 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
               <Input
                 placeholder="Etiqueta"
                 value={block.observacion}
-                onChange={(e) => updateTimeBlock(block.id, "label", e.target.value)}
+                onChange={(e) => updateTimeBlock(block.id, "observacion", e.target.value)}
               />
             </div>
 

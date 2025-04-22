@@ -24,6 +24,8 @@ export interface BloqueHorario {
     docente?: Docente;
     aula?: Aula;
     materia?: Materia;
+    motivo?: string;
+    tipo?: string;
 }
 
 interface Bloque {
