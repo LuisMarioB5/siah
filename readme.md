@@ -6,11 +6,12 @@
 
 Este sistema permite la creación de **horarios académicos inteligentes** para cursos o grupos, basado en criterios personalizados y preferencias configuradas por el usuario.
 
-### 🧩 Estructura del proceso (3 pasos):
+### 🧩 Estructura del proceso (4 pasos):
 
 1. **Selección de datos iniciales:** Curso, materias, docentes, aulas, etc.  
 2. **Configuración del horario:** Definición de bloques semanales (clases, recesos, almuerzos).  
 3. **Aplicación de criterios:** Asignación basada en experiencia docente, equipamiento de aulas, entre otros.
+4. **Visualización del horario** Muestra el o los horarios generados automaticamente.
 
 ---
 
@@ -71,7 +72,7 @@ docker compose -f docker-compose.yml up -d --build frontend
 - ✔ **Paso 1:** Selección de curso, año escolar, materias, docentes, aulas y requisitos especiales.
 - ✔ **Paso 2:** Edición de bloques del horario semanal con soporte para recesos y almuerzos.
 - ✔ **Paso 3:** Criterios de asignación por puntos y criterios personalizados.
-- ✖ **Generación automática del horario:** *En desarrollo* (pendiente el endpoint y visualización final).
+- ✔ **Generación automática del horario:** Visualización de los horarios generados.
 
 ---
 
@@ -85,5 +86,5 @@ docker compose -f docker-compose.yml up -d --build frontend
 
 ## 📝 Notas
 
-> Este proyecto puede ejecutarse completamente de forma local sin conexión a internet.  
+> Este proyecto puede ejecutarse completamente de forma local sin conexión a internet, luego de crearse los contenedores correctamente.  
 > Puedes personalizar los criterios de asignación para ajustar el sistema a tus necesidades.
