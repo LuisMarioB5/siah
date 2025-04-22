@@ -25,16 +25,11 @@ let HorarioService = class HorarioService {
         const bloques = await this.builder.obtenerOCrearBloques(dto.bloques);
         const horarios = await this.builder.obtenerOCrearHorarios(dto.anioEscolarId, dto.dias);
         const resultado = [];
-        const advertencias = [];
         for (const cursoId of dto.cursoIds) {
             const asignacionesCurso = [];
             const cursoMaterias = await this.prisma.curso_materia.findMany({
                 where: { fk_id_curso: cursoId },
                 include: { materia: true },
-            });
-            console.log({
-                cursoId,
-                cursoMaterias
             });
             for (const dia of dto.dias) {
                 const horario = horarios.find(h => h.dia === dia);
@@ -56,17 +51,11 @@ let HorarioService = class HorarioService {
                         const materia = materias[Math.floor(Math.random() * materias.length)];
                         const docente = await this.builder.seleccionarDocente(materia.pk_id, dto.criterios.docente, horario.pk_id, bloque.pk_id);
                         const aula = await this.builder.seleccionarAula(materia, dto.criterios.aula, horario, bloque);
-                        if (!docente || !aula) {
-                            advertencias.push({
-                                cursoId,
-                                dias: {
-                                    dia,
-                                    data: {
-                                        tipo: 'recursos',
-                                        bloqueId: bloque.pk_id,
-                                        motivo: !docente ? 'Sin docente disponible' : 'Sin aula disponible'
-                                    }
-                                }
+                        if (!aula) {
+                            bloqueDatas.push({
+                                bloque,
+                                tipo: 'recursos',
+                                motivo: 'Sin aula disponible'
                             });
                             continue;
                         }
@@ -84,11 +73,10 @@ let HorarioService = class HorarioService {
                             }
                         });
                         if (conflicto) {
-                            advertencias.push({
-                                conflicto: {
-                                    tipo: 'choque',
-                                    motivo: 'Conflicto al tratar de realizar una asignacion'
-                                }
+                            bloqueDatas.push({
+                                bloque,
+                                tipo: 'recursos',
+                                motivo: 'Sin docente disponible'
                             });
                             continue;
                         }
@@ -151,7 +139,6 @@ let HorarioService = class HorarioService {
         return {
             mensaje: 'Horario generado exitosamente',
             resultado,
-            advertencias,
         };
     }
 };

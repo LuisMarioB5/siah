@@ -22,28 +22,43 @@ export async function seedDocenteMaterias() {
     { fk_id_docente: 3, fk_id_materia: 6, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
     { fk_id_docente: 3, fk_id_materia: 19, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
 
-    // Docente 4: Informática
+    // Docente 4: Informática y Matematicas
     { fk_id_docente: 4, fk_id_materia: 7, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
     { fk_id_docente: 4, fk_id_materia: 8, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 4, fk_id_materia: 1, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 4, fk_id_materia: 2, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 4, fk_id_materia: 17, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 4, fk_id_materia: 15, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 4, fk_id_materia: 16, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
 
-    // Docente 5: Biología
+    // Docente 5: Biología y Química
     { fk_id_docente: 5, fk_id_materia: 9, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
     { fk_id_docente: 5, fk_id_materia: 10, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 5, fk_id_materia: 11, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 5, fk_id_materia: 12, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
 
-    // Docente 6: Química
+    // Docente 6: Química y Fisica
     { fk_id_docente: 6, fk_id_materia: 11, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
     { fk_id_docente: 6, fk_id_materia: 12, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 6, fk_id_materia: 3, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 6, fk_id_materia: 4, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 6, fk_id_materia: 18, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
 
-    // Docente 7: Historia
+    // Docente 7: Historia y Ética
     { fk_id_docente: 7, fk_id_materia: 13, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
     { fk_id_docente: 7, fk_id_materia: 14, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
-
-    // Docente 8: Educación Física
+    { fk_id_docente: 7, fk_id_materia: 20, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    
+    // Docente 8: Educación Física y Ética
     { fk_id_docente: 8, fk_id_materia: 15, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
     { fk_id_docente: 8, fk_id_materia: 16, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 8, fk_id_materia: 20, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
 
-    // Docente 9: Ética
+    // Docente 9: Ética y Física
     { fk_id_docente: 9, fk_id_materia: 20, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 9, fk_id_materia: 3, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 9, fk_id_materia: 4, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
+    { fk_id_docente: 9, fk_id_materia: 18, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},
 
     // Docente 10: Reforzadores mixtos
     { fk_id_docente: 10, fk_id_materia: 1, tiene_especialidad: faker.datatype.boolean(), experiencia_anios: faker.number.int({ min: 0, max: 10})},

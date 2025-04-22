@@ -17,9 +17,7 @@ export class HorarioService {
   async generarHorario(dto: GenerarHorarioDto) {
     const bloques = await this.builder.obtenerOCrearBloques(dto.bloques);
     const horarios = await this.builder.obtenerOCrearHorarios(dto.anioEscolarId, dto.dias);
-    const resultado: any[] = [];
-    const advertencias: any[] = [];
-    
+    const resultado: any[] = [];    
     
     for (const cursoId of dto.cursoIds) {
       const asignacionesCurso: any[] = [];
@@ -54,17 +52,11 @@ export class HorarioService {
               const docente = await this.builder.seleccionarDocente(materia.pk_id, dto.criterios.docente, horario.pk_id, bloque.pk_id);
               const aula = await this.builder.seleccionarAula(materia, dto.criterios.aula, horario, bloque);
       
-              if (!docente || !aula) {
-                advertencias.push({
-                  cursoId,
-                  dias: {
-                    dia,
-                    data: {
-                      tipo: 'recursos',
-                      bloqueId: bloque.pk_id,
-                      motivo: !docente ? 'Sin docente disponible' : 'Sin aula disponible'
-                    }
-                  }
+              if (!aula) {
+                bloqueDatas.push({
+                  bloque,
+                  tipo: 'recursos',
+                  motivo: 'Sin aula disponible'
                 });
 
                 continue;
@@ -85,11 +77,10 @@ export class HorarioService {
               });
       
               if (conflicto) {
-                advertencias.push({
-                  conflicto: {
-                    tipo: 'choque',
-                    motivo: 'Conflicto al tratar de realizar una asignacion'
-                  }
+                bloqueDatas.push({
+                  bloque,
+                  tipo: 'recursos',
+                  motivo: 'Sin docente disponible'
                 });
 
                 continue;
@@ -159,7 +150,6 @@ export class HorarioService {
     return {
       mensaje: 'Horario generado exitosamente',
       resultado,
-      advertencias,
     };
   }
 }

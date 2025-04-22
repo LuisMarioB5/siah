@@ -10,6 +10,5 @@ export declare class HorarioService {
     generarHorario(dto: GenerarHorarioDto): Promise<{
         mensaje: string;
         resultado: any[];
-        advertencias: any[];
     }>;
 }
