@@ -9,6 +9,9 @@ export declare class HorarioBuilderService {
     constructor(prisma: PrismaService, evaluador: CriteriosEvaluadorService);
     obtenerOCrearBloques(bloquesDto: BloqueDto[]): Promise<bloque[]>;
     obtenerOCrearHorarios(anioEscolarId: number, dias: dia_semana[]): Promise<horario_generado[]>;
-    seleccionarDocente(materiaId: number, criterios: DocenteCriteria, horarioId: number, bloqueId: number): Promise<docente>;
+    seleccionarDocente(materiaId: number, criterios: DocenteCriteria, horarioId: number, bloqueId: number): Promise<{
+        datos: docente;
+        puntaje: number;
+    }>;
     seleccionarAula(materia: materia, criterios: AulaCriteria, horario: horario_generado, bloque: bloque): Promise<aula>;
 }

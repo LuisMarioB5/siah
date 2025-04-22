@@ -85,7 +85,7 @@ let HorarioBuilderService = class HorarioBuilderService {
         const docentesRaw = await this.prisma.docente_materia.findMany({
             where: {
                 fk_id_materia: materiaId
-            }
+            },
         });
         let mejor = null;
         for (const docente of docentesRaw) {
@@ -112,9 +112,15 @@ let HorarioBuilderService = class HorarioBuilderService {
         const mejorDocente = await this.prisma.docente.findFirst({
             where: {
                 pk_id: mejor?.docenteId
+            }, include: {
+                persona: true
             }
         });
-        return mejorDocente ?? null;
+        const mejorOpcion = {
+            datos: mejorDocente,
+            puntaje: mejor?.puntaje
+        };
+        return mejorOpcion ?? null;
     }
     async seleccionarAula(materia, criterios, horario, bloque) {
         const condiciones = {};

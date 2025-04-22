@@ -79,7 +79,7 @@ export class HorarioService {
                   fk_id_horario: horario.pk_id,
                   esta_activo: true,
                   OR: [
-                    { fk_id_docente: docente.pk_id },
+                    { fk_id_docente: docente.datos.pk_id },
                     { fk_id_aula: aula.pk_id },
                     { fk_id_curso: cursoId }
                   ]
@@ -148,8 +148,14 @@ export class HorarioService {
         })
       }
 
+      const curso = await this.prisma.curso.findFirst({
+        where: {
+          pk_id: cursoId
+        }
+      });
+
       resultado.push({
-        cursoId,
+        curso,
         asignaciones: asignacionesCurso
       });
     }

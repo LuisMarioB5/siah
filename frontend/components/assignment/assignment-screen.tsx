@@ -1,6 +1,4 @@
-"use client"
-
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -9,9 +7,11 @@ import { ScheduleConfig } from "@/components/assignment/schedule-config"
 import { AssignmentCriteria } from "@/components/assignment/assignment-criteria"
 import { AssignmentPreview } from "@/components/assignment/assignment-preview"
 import { useAsignacion } from "@/context/asignacion-context"
+import { useBackendData } from "@/context/backend.context"
 
 export function AssignmentScreen() {
   const { updateAsignacion } = useAsignacion();
+  const { setBackendResponse } = useBackendData();
   const getDatosBasicos = useRef<() => any>(null);
   const getDatosHorarios = useRef<() => any>(null);
   const getDatosCriterios = useRef<() => any>(null);
@@ -19,23 +19,41 @@ export function AssignmentScreen() {
   const [activeTab, setActiveTab] = useState("basic")
   const [showPreview, setShowPreview] = useState(false)
 
-  const handleGeneratePreview = () => {
-    const datosPaso1 = getDatosBasicos.current?.()
-    const datosPaso2 = getDatosHorarios.current?.()
-    const datosPaso3 = getDatosCriterios.current?.()
-  
+  const handleGeneratePreview = async () => {
+    const datosPaso1 = getDatosBasicos.current?.();
+    const datosPaso2 = getDatosHorarios.current?.() || [];
+    const datosPaso3 = getDatosCriterios.current?.();
+    
     const datosCompletos = {
       ...datosPaso1,
-      bloques: {...datosPaso2},
-      criterios: {...datosPaso3}
+      bloques: datosPaso2,
+      criterios: datosPaso3
     }
   
-    console.log("📦 Enviando al backend:", datosCompletos)
-    // axios.post("/api/generar-horario", datosCompletos)
-    
-    setShowPreview(true)
-  }
+  
+    try {
+      const response = await fetch("http://localhost:3001/horario/generar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datosCompletos),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error al generar horario: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      setBackendResponse(data)
+  
+      setShowPreview(true);
+    } catch (error) {
+      console.error("❌ Error:", error);
+    }
+  };
 
+  
   const handleBackToConfig = () => {
     setShowPreview(false)
   }

@@ -75,7 +75,7 @@ let HorarioService = class HorarioService {
                                 fk_id_horario: horario.pk_id,
                                 esta_activo: true,
                                 OR: [
-                                    { fk_id_docente: docente.pk_id },
+                                    { fk_id_docente: docente.datos.pk_id },
                                     { fk_id_aula: aula.pk_id },
                                     { fk_id_curso: cursoId }
                                 ]
@@ -91,7 +91,7 @@ let HorarioService = class HorarioService {
                             continue;
                         }
                         ;
-                        const docenteEval = await this.evaluador.evaluarDocente(docente.pk_id, materia.pk_id, dto.criterios.docente, horario.pk_id);
+                        const docenteEval = await this.evaluador.evaluarDocente(docente.datos.pk_id, materia.pk_id, dto.criterios.docente, horario.pk_id);
                         const aulaEval = this.evaluador.evaluarAula(aula, dto.criterios.aula);
                         await this.prisma.asignacion.create({
                             data: {
@@ -99,7 +99,7 @@ let HorarioService = class HorarioService {
                                 fk_id_horario: horario.pk_id,
                                 fk_id_aula: aula.pk_id,
                                 fk_id_curso: cursoId,
-                                fk_id_docente: docente.pk_id,
+                                fk_id_docente: docente.datos.pk_id,
                                 fk_id_materia: materia.pk_id,
                                 esta_activo: true,
                                 justificacion: 'Generado automáticamente',
@@ -137,8 +137,13 @@ let HorarioService = class HorarioService {
                     data: bloqueDatas
                 });
             }
+            const curso = await this.prisma.curso.findFirst({
+                where: {
+                    pk_id: cursoId
+                }
+            });
             resultado.push({
-                cursoId,
+                curso,
                 asignaciones: asignacionesCurso
             });
         }

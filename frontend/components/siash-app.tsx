@@ -8,6 +8,7 @@ import { AssignmentScreen } from "@/components/assignment/assignment-screen"
 import { SubstitutionScreen } from "@/components/substitution/substitution-screen"
 import { HistoryScreen } from "@/components/history/history-screen"
 import { AsignacionProvider } from "@/context/asignacion-context"
+import { BackendDataProvider } from "@/context/backend.context"
 
 export function SIASHApp() {
   const [activeScreen, setActiveScreen] = useState("assignment")
@@ -29,11 +30,13 @@ export function SIASHApp() {
 
   return (
     <ThemeProvider defaultTheme="light" storageKey="siash-theme">
-      <AsignacionProvider>
-        <AppLayout activeScreen={activeScreen} onScreenChange={setActiveScreen}>
-          {renderScreen()}
-        </AppLayout>
-      </AsignacionProvider>
+      <BackendDataProvider>
+        <AsignacionProvider>
+          <AppLayout activeScreen={activeScreen} onScreenChange={setActiveScreen}>
+            {renderScreen()}
+          </AppLayout>
+        </AsignacionProvider>
+      </BackendDataProvider>
     </ThemeProvider>
   )
 }

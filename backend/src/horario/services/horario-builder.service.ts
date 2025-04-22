@@ -91,7 +91,7 @@ export class HorarioBuilderService {
       const docentesRaw = await this.prisma.docente_materia.findMany({
         where: {
           fk_id_materia: materiaId
-        }
+        },
       });
 
       let mejor: { docenteId: number, puntaje: number, detalle: any } = null;
@@ -126,6 +126,8 @@ export class HorarioBuilderService {
       const mejorDocente = await this.prisma.docente.findFirst({
         where: {
           pk_id: mejor?.docenteId
+        }, include: {
+          persona: true
         }
       })
       

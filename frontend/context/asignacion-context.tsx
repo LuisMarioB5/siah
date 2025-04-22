@@ -1,4 +1,3 @@
-import { string } from "prop-types";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 // 1. Definimos la estructura de los datos que se manejarán

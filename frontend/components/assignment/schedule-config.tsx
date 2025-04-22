@@ -10,26 +10,34 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefObject<(() => any) | null> }) {
   const [timeBlocks, setTimeBlocks] = useState([
-    { id: 1, tipo: "clase", horaInicio: "08:15", horaFin: "09:00", observacion: "Bloque 1" },
-    { id: 2, tipo: "clase", horaInicio: "09:00", horaFin: "09:45", observacion: "Bloque 1" },
-    { id: 3, tipo: "receso", horaInicio: "09:45", horaFin: "10:15", observacion: "Receso" },
-    { id: 4, tipo: "clase", horaInicio: "10:15", horaFin: "11:00", observacion: "Bloque 2" },
-    { id: 5, tipo: "clase", horaInicio: "11:00", horaFin: "11:45", observacion: "Bloque 2" },
-    { id: 6, tipo: "almuerzo", horaInicio: "11:45", horaFin: "12:45", observacion: "Almuerzo" },
-    { id: 7, tipo: "clase", horaInicio: "12:45", horaFin: "13:30", observacion: "Bloque 3" },
-    { id: 8, tipo: "clase", horaInicio: "13:30", horaFin: "14:15", observacion: "Bloque 3" },
-    { id: 9, tipo: "receso", horaInicio: "14:15", horaFin: "14:30", observacion: "Receso" },
-    { id: 10, tipo: "clase", horaInicio: "14:30", horaFin: "15:15", observacion: "Bloque 4" },
-    { id: 11, tipo: "clase", horaInicio: "15:15", horaFin: "16:00", observacion: "Bloque 4" },
+    { id: 1, tipo: "clase", hora_inicio: "08:15", hora_fin: "09:00", observacion: "Bloque 1" },
+    { id: 2, tipo: "clase", hora_inicio: "09:00", hora_fin: "09:45", observacion: "Bloque 1" },
+    { id: 3, tipo: "receso", hora_inicio: "09:45", hora_fin: "10:15", observacion: "Receso" },
+    { id: 4, tipo: "clase", hora_inicio: "10:15", hora_fin: "11:00", observacion: "Bloque 2" },
+    { id: 5, tipo: "clase", hora_inicio: "11:00", hora_fin: "11:45", observacion: "Bloque 2" },
+    { id: 6, tipo: "almuerzo", hora_inicio: "11:45", hora_fin: "12:45", observacion: "Almuerzo" },
+    { id: 7, tipo: "clase", hora_inicio: "12:45", hora_fin: "13:30", observacion: "Bloque 3" },
+    { id: 8, tipo: "clase", hora_inicio: "13:30", hora_fin: "14:15", observacion: "Bloque 3" },
+    { id: 9, tipo: "receso", hora_inicio: "14:15", hora_fin: "14:30", observacion: "Receso" },
+    { id: 10, tipo: "clase", hora_inicio: "14:30", hora_fin: "15:15", observacion: "Bloque 4" },
+    { id: 11, tipo: "clase", hora_inicio: "15:15", hora_fin: "16:00", observacion: "Bloque 4" },
   ])
 
   const obtenerDatos = () => {
-    return timeBlocks;
+    const bloquesTransformados = timeBlocks.map((bloque: any) => ({
+      tipo: bloque.tipo,
+      hora_inicio: parseTimeStringToDate(bloque.hora_inicio),
+      hora_fin: parseTimeStringToDate(bloque.hora_fin),
+      observacion: bloque.observacion,
+    }));
+    
+    return bloquesTransformados;
   }
 
   useEffect(() => {
     if(getDatosRef) getDatosRef.current = obtenerDatos
   }, [timeBlocks]);
+
 
   const addTimeBlock = () => {
     const newId = timeBlocks.length > 0 ? Math.max(...timeBlocks.map((block) => block.id)) + 1 : 1
@@ -38,8 +46,8 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
       {
         id: newId,
         tipo: "clase",
-        horaInicio: "16:00",
-        horaFin: "13:45",
+        hora_inicio: "16:00",
+        hora_fin: "13:45",
         observacion: `Nuevo Bloque`,
       },
     ])
@@ -96,7 +104,7 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
                 <Input
                   id={`start-time-${block.id}`}
                   type="time"
-                  value={block.horaInicio}
+                  value={block.hora_inicio}
                   onChange={(e) => updateTimeBlock(block.id, "startTime", e.target.value)}
                 />
               </div>
@@ -107,7 +115,7 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
                 <Input
                   id={`end-time-${block.id}`}
                   type="time"
-                  value={block.horaFin}
+                  value={block.hora_fin}
                   onChange={(e) => updateTimeBlock(block.id, "endTime", e.target.value)}
                 />
               </div>
@@ -156,3 +164,10 @@ export function ScheduleConfig({ getDatosRef }: { getDatosRef: React.MutableRefO
     </div>
   )
 }
+
+const parseTimeStringToDate = (time: string) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  const now = new Date();
+  now.setHours(hours, minutes, 0, 0);
+  return now;
+};

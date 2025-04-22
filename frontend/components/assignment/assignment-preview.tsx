@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardFooter } from "@/components/ui/card"
+
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ArrowLeft, CheckCircle, Edit, Info } from "lucide-react"
@@ -18,27 +20,41 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AsignacionDia, BloqueHorario, Curso, HorarioMock } from "@/utils/HorarioMocks.dto"
+import { useBackendData } from "@/context/backend.context"
 
 interface AssignmentPreviewProps {
   onBack: () => void
 }
 
 export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
+  const { backendResponse } = useBackendData();
   const [editMode, setEditMode] = useState(false)
   const [selectedCell, setSelectedCell] = useState<any>(null)
   const [activeTab, setActiveTab] = useState("schedule")
+  const [hours, setHours] = useState();
+  const [days, setDays] = useState();
+  const [courses, setCourses] = useState<Curso[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<string>("");
 
-  const hours = [
-    "7:30 - 8:20",
-    "8:20 - 9:10",
-    "9:10 - 10:00",
-    "10:00 - 10:30",
-    "10:30 - 11:20",
-    "11:20 - 12:10",
-    "12:10 - 13:00",
-  ]
-  const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+  useEffect(() => {
+    const hours = extraerHorasUnicas(backendResponse);
+    setHours(hours);
 
+    const days = extraerDiasUnicos(backendResponse);
+    setDays(days);
+    
+    const cursos = extraerCursosUnicos(backendResponse);
+    setCourses(cursos);
+  }, [backendResponse]);  
+
+  useEffect(() => {
+    if (courses.length > 0) {
+      setSelectedCourse(courses[0].nombre);
+    }
+  }, [courses]);
+  
+  
   // Sample data for the schedule
   const schedule = {
     Lunes: {
@@ -309,6 +325,15 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
     }
   }
 
+  // const courses = [
+  //   { value: "1A", label: "1° A" },
+  //   { value: "1B", label: "1° B" },
+  //   { value: "2A", label: "2° A" },
+  //   { value: "2B", label: "2° B" },
+  //   { value: "3A", label: "3° A" },
+  //   { value: "3B", label: "3° B" },
+  // ]
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -325,16 +350,29 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
               </Button>
               <div>
                 <CardTitle>Horario Generado</CardTitle>
-                <CardDescription>Horario generado para el curso 1° A</CardDescription>
+                <CardDescription>Horario generado para el curso {selectedCourse}</CardDescription>
               </div>
             </div>
-            <Button variant={editMode ? "default" : "outline"} size="sm" onClick={() => setEditMode(!editMode)}>
+            <Button style={{visibility: 'hidden'}} variant={editMode ? "default" : "outline"} size="sm" onClick={() => setEditMode(!editMode)}>
               <Edit className="mr-2 h-4 w-4" />
               {editMode ? "Editando" : "Editar Manualmente"}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
+          <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+            <SelectTrigger>
+              <SelectValue placeholder="Seleccionar curso" />
+            </SelectTrigger>
+            <SelectContent>
+              {courses?.map((course: Curso) => (
+                <SelectItem key={course.pk_id} value={course.nombre}>
+                  {course.nombre}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Tabs defaultValue="schedule" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-4">
               <TabsTrigger value="schedule">Horario</TabsTrigger>
@@ -347,7 +385,7 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
                   <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
                   <span className="text-sm">Asignación nueva</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div style={{visibility: 'hidden'}} className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-amber-100 border border-amber-300 rounded"></div>
                   <span className="text-sm">Editado manualmente</span>
                 </div>
@@ -358,18 +396,17 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[100px]">Hora</TableHead>
-                      {days.map((day) => (
+                      {days?.map((day: string) => (
                         <TableHead key={day}>{day}</TableHead>
                       ))}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {hours.map((hour) => (
+                    {hours?.map((hour: string) => (
                       <TableRow key={hour}>
                         <TableCell className="font-medium">{hour}</TableCell>
-                        {days.map((day) => {
+                        {/* {days.map((day: string) => {
                           const cell = schedule[day][hour]
-
                           // Check if this is a break period
                           if (cell.isBreak) {
                             return (
@@ -404,7 +441,7 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
                               </div>
                             </TableCell>
                           )
-                        })}
+                        })} */}
                       </TableRow>
                     ))}
                   </TableBody>
@@ -615,4 +652,125 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
       </Card>
     </div>
   )
+}
+
+function extraerHorasUnicas(horario: HorarioMock): string[] {
+  const horasSet = new Set<string>();
+
+  horario.resultado.forEach(curso => {
+    curso.asignaciones.forEach(asignacion => {
+      asignacion.data.forEach(item => {
+        if (item.bloque?.hora_inicio && item.bloque?.hora_fin) {
+          const inicio = new Date(item.bloque.hora_inicio);
+          const fin = new Date(item.bloque.hora_fin);
+
+          // Formatear hora en formato HH:MM
+          const formato = (fecha: Date) => {
+            return fecha.toLocaleTimeString("es-ES", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            });
+          };
+
+          const horaRango = `${formato(inicio)} - ${formato(fin)}`;
+          horasSet.add(horaRango);
+        }
+      });
+    });
+  });
+
+  return Array.from(horasSet).sort((a, b) => {
+    const horaA = a.split(" - ")[0];
+    const horaB = b.split(" - ")[0];
+    return horaA.localeCompare(horaB);
+  });
+}
+
+function extraerDiasUnicos(horario: HorarioMock): string[] {
+  const diasSet = new Set<string>();
+
+  horario.resultado.forEach(curso => {
+    curso.asignaciones.forEach(asignacion => {
+      const capitalizado = asignacion.dia.charAt(0).toUpperCase() + asignacion.dia.slice(1).toLowerCase();
+      diasSet.add(capitalizado);
+    });
+  });
+
+  return Array.from(diasSet);
+}
+
+function extraerCursosUnicos(horario: HorarioMock): Curso[] {
+  const cursosSet = new Set<Curso>();
+
+  horario.resultado.forEach(datos => {
+    cursosSet.add(datos.curso)
+  });
+
+  return Array.from(cursosSet);
+}
+
+function convertScheduleFromBackend(data: any, selectedCourse: string) {
+  const schedule: Record<string, any> = {};
+
+  const daysMap: Record<string, string> = {
+    lunes: "Lunes",
+    martes: "Martes",
+    miercoles: "Miércoles",
+    miércoles: "Miércoles",
+    jueves: "Jueves",
+    viernes: "Viernes",
+  };
+
+  const courseData = data.resultado.find(
+    (curso: Curso) => curso.nombre === selectedCourse
+  );
+
+  if (!courseData) {
+    console.warn("Curso no encontrado:", selectedCourse);
+    return schedule;
+  }
+
+  courseData.asignaciones.forEach((asignacion: AsignacionDia) => {
+    const day = daysMap[asignacion.dia.toLowerCase()];
+    if (!day) return;
+
+    schedule[day] = schedule[day] || {};
+
+    asignacion.data.forEach((bloque: BloqueHorario) => {
+      const horaInicio = new Date(bloque.bloque.hora_inicio);
+      const horaFin = new Date(bloque.bloque.hora_fin);
+
+      const timeSlot = `${horaInicio.getHours()}:${horaInicio
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")} - ${horaFin.getHours()}:${horaFin
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+
+      if (bloque.bloque.tipo === "receso" || bloque.materia == null) {
+        schedule[day][timeSlot] = {
+          isBreak: true,
+          name: "RECESO",
+        };
+      } else if (bloque.bloque.tipo === "almuerzo" || bloque.materia == null) {
+        schedule[day][timeSlot] = {
+          isBreak: true,
+          name: "ALMUERZO",
+        };
+      } else {
+        schedule[day][timeSlot] = {
+          teacher: bloque.docente?.persona.nombre + ' ' + bloque.docente?.persona.apellido, // Puedes mapearlo desde otra fuente si no lo tienes en el bloque
+          subject: bloque.materia.nombre,
+          room: bloque.aula?.nombre,
+          course: selectedCourse,
+          isNew: true,
+          points: 0, // Puedes asignar otro valor o quitarlo si no aplica
+        };
+      }
+    });
+  });
+
+  return schedule;
 }
