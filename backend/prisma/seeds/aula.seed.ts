@@ -8,7 +8,7 @@ export async function seedAulas() {
 
   const tipos = Object.values(tipo_aula);
 
-  const aulas = Array.from({ length: 10 }).map((_, index) => {
+  const aulas = Array.from({ length: 50 }).map((_, index) => {
     const tipo = faker.helpers.arrayElement(tipos);
     
     // Puedes usar el tipo para condicionar los valores booleanos si quieres más realismo

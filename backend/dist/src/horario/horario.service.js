@@ -32,7 +32,10 @@ let HorarioService = class HorarioService {
                 where: { fk_id_curso: cursoId },
                 include: { materia: true },
             });
-            const conteoMaterias = new Map();
+            console.log({
+                cursoId,
+                cursoMaterias
+            });
             for (const dia of dto.dias) {
                 const horario = horarios.find(h => h.dia === dia);
                 const bloqueDatas = [];
@@ -49,9 +52,8 @@ let HorarioService = class HorarioService {
                         }
                     });
                     if (bloque.tipo === client_1.tipo_bloque.clase) {
-                        const materia = cursoMaterias
-                            .map(cm => cm.materia)
-                            .sort((a, b) => (conteoMaterias.get(a.pk_id) || 0) - (conteoMaterias.get(b.pk_id) || 0))[0];
+                        const materias = cursoMaterias.map(cm => cm.materia);
+                        const materia = materias[Math.floor(Math.random() * materias.length)];
                         const docente = await this.builder.seleccionarDocente(materia.pk_id, dto.criterios.docente, horario.pk_id, bloque.pk_id);
                         const aula = await this.builder.seleccionarAula(materia, dto.criterios.aula, horario, bloque);
                         if (!docente || !aula) {
@@ -75,7 +77,7 @@ let HorarioService = class HorarioService {
                                 fk_id_horario: horario.pk_id,
                                 esta_activo: true,
                                 OR: [
-                                    { fk_id_docente: docente.datos.pk_id },
+                                    { fk_id_docente: docente.pk_id },
                                     { fk_id_aula: aula.pk_id },
                                     { fk_id_curso: cursoId }
                                 ]
@@ -91,7 +93,7 @@ let HorarioService = class HorarioService {
                             continue;
                         }
                         ;
-                        const docenteEval = await this.evaluador.evaluarDocente(docente.datos.pk_id, materia.pk_id, dto.criterios.docente, horario.pk_id);
+                        const docenteEval = await this.evaluador.evaluarDocente(docente.pk_id, materia.pk_id, dto.criterios.docente, horario.pk_id);
                         const aulaEval = this.evaluador.evaluarAula(aula, dto.criterios.aula);
                         await this.prisma.asignacion.create({
                             data: {
@@ -99,7 +101,7 @@ let HorarioService = class HorarioService {
                                 fk_id_horario: horario.pk_id,
                                 fk_id_aula: aula.pk_id,
                                 fk_id_curso: cursoId,
-                                fk_id_docente: docente.datos.pk_id,
+                                fk_id_docente: docente.pk_id,
                                 fk_id_materia: materia.pk_id,
                                 esta_activo: true,
                                 justificacion: 'Generado automáticamente',
@@ -110,7 +112,6 @@ let HorarioService = class HorarioService {
                                 }),
                             }
                         });
-                        conteoMaterias.set(materia.pk_id, (conteoMaterias.get(materia.pk_id) || 0) + 1);
                         bloqueDatas.push({
                             bloque,
                             docente,

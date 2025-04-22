@@ -29,6 +29,8 @@ export function AssignmentScreen() {
       bloques: datosPaso2,
       criterios: datosPaso3
     }
+
+    console.log('Datos para enviados para el backend:', datosCompletos)
   
   
     try {

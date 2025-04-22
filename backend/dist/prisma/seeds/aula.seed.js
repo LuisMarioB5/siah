@@ -7,7 +7,7 @@ const prisma = new client_1.PrismaClient();
 async function seedAulas() {
     console.log('🌱 Iniciando seeding para aulas...');
     const tipos = Object.values(client_1.tipo_aula);
-    const aulas = Array.from({ length: 10 }).map((_, index) => {
+    const aulas = Array.from({ length: 50 }).map((_, index) => {
         const tipo = faker_1.faker.helpers.arrayElement(tipos);
         return {
             nombre: String(index + 1).padStart(3, '0'),

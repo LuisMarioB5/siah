@@ -20,8 +20,9 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AsignacionDia, BloqueHorario, Curso, HorarioMock } from "@/utils/HorarioMocks.dto"
+import { AsignacionDia, BloqueHorario, Curso, CursoHorario, HorarioMock } from "@/utils/HorarioMocks.dto"
 import { useBackendData } from "@/context/backend.context"
+import { time } from "console"
 
 interface AssignmentPreviewProps {
   onBack: () => void
@@ -34,305 +35,33 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
   const [activeTab, setActiveTab] = useState("schedule")
   const [hours, setHours] = useState();
   const [days, setDays] = useState();
-  const [courses, setCourses] = useState<Curso[]>([]);
+  const [courses, setCourses] = useState<Curso[]>([])
   const [selectedCourse, setSelectedCourse] = useState<string>("");
+  const [schedule, setSchedule] = useState();
+  const [scheduleForCourse, setScheduleForCourse] = useState();
 
   useEffect(() => {
+    console.log(141,backendResponse)
     const hours = extraerHorasUnicas(backendResponse);
-    setHours(hours);
-
     const days = extraerDiasUnicos(backendResponse);
+    const courses = extraerCursosUnicos(backendResponse);
+    const schedule = convertAllSchedulesFromBackend(backendResponse)
+
+    setHours(hours);
     setDays(days);
-    
-    const cursos = extraerCursosUnicos(backendResponse);
-    setCourses(cursos);
-  }, [backendResponse]);  
+    setCourses(courses);
+    setSchedule(schedule);
+  }, [backendResponse]);
 
   useEffect(() => {
     if (courses.length > 0) {
       setSelectedCourse(courses[0].nombre);
     }
   }, [courses]);
-  
-  
-  // Sample data for the schedule
-  const schedule = {
-    Lunes: {
-      "7:30 - 8:20": {
-        teacher: "María López",
-        subject: "Matemáticas",
-        room: "A101",
-        course: "1A",
-        isNew: true,
-        points: 92,
-      },
-      "8:20 - 9:10": {
-        teacher: "María López",
-        subject: "Matemáticas",
-        room: "A101",
-        course: "1A",
-        isNew: true,
-        points: 92,
-      },
-      "9:10 - 10:00": {
-        teacher: "Carlos Ruiz",
-        subject: "Literatura",
-        room: "A102",
-        course: "1A",
-        isNew: true,
-        points: 88,
-      },
-      "10:00 - 10:30": { isBreak: true, name: "RECESO" },
-      "10:30 - 11:20": {
-        teacher: "Ana García",
-        subject: "Ciencias",
-        room: "C305",
-        course: "1A",
-        isNew: true,
-        points: 85,
-      },
-      "11:20 - 12:10": {
-        teacher: "Laura Martínez",
-        subject: "Inglés",
-        room: "B204",
-        course: "1A",
-        isNew: true,
-        points: 90,
-      },
-      "12:10 - 13:00": {
-        teacher: "Juan Pérez",
-        subject: "Historia",
-        room: "B203",
-        course: "1A",
-        isNew: true,
-        points: 87,
-      },
-    },
-    Martes: {
-      "7:30 - 8:20": {
-        teacher: "Pedro Sánchez",
-        subject: "Física",
-        room: "C306",
-        course: "1A",
-        isNew: true,
-        points: 89,
-      },
-      "8:20 - 9:10": {
-        teacher: "Pedro Sánchez",
-        subject: "Física",
-        room: "C306",
-        course: "1A",
-        isNew: true,
-        points: 89,
-      },
-      "9:10 - 10:00": {
-        teacher: "Ana García",
-        subject: "Ciencias",
-        room: "C305",
-        course: "1A",
-        isNew: true,
-        points: 85,
-      },
-      "10:00 - 10:30": { isBreak: true, name: "RECESO" },
-      "10:30 - 11:20": {
-        teacher: "Juan Pérez",
-        subject: "Historia",
-        room: "B203",
-        course: "1A",
-        isNew: true,
-        points: 87,
-      },
-      "11:20 - 12:10": {
-        teacher: "Carlos Ruiz",
-        subject: "Literatura",
-        room: "A102",
-        course: "1A",
-        isNew: true,
-        points: 88,
-      },
-      "12:10 - 13:00": {
-        teacher: "María López",
-        subject: "Matemáticas",
-        room: "A101",
-        course: "1A",
-        isNew: true,
-        points: 92,
-      },
-    },
-    Miércoles: {
-      "7:30 - 8:20": {
-        teacher: "Laura Martínez",
-        subject: "Inglés",
-        room: "B204",
-        course: "1A",
-        isNew: true,
-        points: 90,
-      },
-      "8:20 - 9:10": {
-        teacher: "Laura Martínez",
-        subject: "Inglés",
-        room: "B204",
-        course: "1A",
-        isNew: true,
-        points: 90,
-      },
-      "9:10 - 10:00": {
-        teacher: "Juan Pérez",
-        subject: "Historia",
-        room: "B203",
-        course: "1A",
-        isNew: true,
-        points: 87,
-      },
-      "10:00 - 10:30": { isBreak: true, name: "RECESO" },
-      "10:30 - 11:20": {
-        teacher: "María López",
-        subject: "Matemáticas",
-        room: "A101",
-        course: "1A",
-        isNew: true,
-        points: 92,
-      },
-      "11:20 - 12:10": {
-        teacher: "Ana García",
-        subject: "Ciencias",
-        room: "C305",
-        course: "1A",
-        isNew: true,
-        points: 85,
-      },
-      "12:10 - 13:00": {
-        teacher: "Pedro Sánchez",
-        subject: "Física",
-        room: "C306",
-        course: "1A",
-        isNew: true,
-        points: 89,
-      },
-    },
-    Jueves: {
-      "7:30 - 8:20": {
-        teacher: "Carlos Ruiz",
-        subject: "Literatura",
-        room: "A102",
-        course: "1A",
-        isNew: true,
-        points: 88,
-      },
-      "8:20 - 9:10": {
-        teacher: "Carlos Ruiz",
-        subject: "Literatura",
-        room: "A102",
-        course: "1A",
-        isNew: true,
-        points: 88,
-      },
-      "9:10 - 10:00": {
-        teacher: "María López",
-        subject: "Matemáticas",
-        room: "A101",
-        course: "1A",
-        isNew: true,
-        points: 92,
-      },
-      "10:00 - 10:30": { isBreak: true, name: "RECESO" },
-      "10:30 - 11:20": {
-        teacher: "Pedro Sánchez",
-        subject: "Física",
-        room: "C306",
-        course: "1A",
-        isNew: true,
-        points: 89,
-      },
-      "11:20 - 12:10": {
-        teacher: "Juan Pérez",
-        subject: "Historia",
-        room: "B203",
-        course: "1A",
-        isNew: true,
-        points: 87,
-      },
-      "12:10 - 13:00": {
-        teacher: "Laura Martínez",
-        subject: "Inglés",
-        room: "B204",
-        course: "1A",
-        isNew: true,
-        points: 90,
-      },
-    },
-    Viernes: {
-      "7:30 - 8:20": {
-        teacher: "Ana García",
-        subject: "Ciencias",
-        room: "C305",
-        course: "1A",
-        isNew: true,
-        points: 85,
-      },
-      "8:20 - 9:10": {
-        teacher: "Ana García",
-        subject: "Ciencias",
-        room: "C305",
-        course: "1A",
-        isNew: true,
-        points: 85,
-      },
-      "9:10 - 10:00": {
-        teacher: "Pedro Sánchez",
-        subject: "Física",
-        room: "C306",
-        course: "1A",
-        isNew: true,
-        points: 89,
-      },
-      "10:00 - 10:30": { isBreak: true, name: "RECESO" },
-      "10:30 - 11:20": {
-        teacher: "Laura Martínez",
-        subject: "Inglés",
-        room: "B204",
-        course: "1A",
-        isNew: true,
-        points: 90,
-      },
-      "11:20 - 12:10": {
-        teacher: "María López",
-        subject: "Matemáticas",
-        room: "A101",
-        course: "1A",
-        isNew: true,
-        points: 92,
-      },
-      "12:10 - 13:00": {
-        teacher: "Carlos Ruiz",
-        subject: "Literatura",
-        room: "A102",
-        course: "1A",
-        isNew: true,
-        points: 88,
-      },
-    },
-  }
 
-  const handleEditCell = (day: string, hour: string) => {
-    const cell = schedule[day][hour]
-    if (!cell.isBreak) {
-      setSelectedCell({
-        day,
-        hour,
-        ...cell,
-      })
-    }
-  }
-
-  // const courses = [
-  //   { value: "1A", label: "1° A" },
-  //   { value: "1B", label: "1° B" },
-  //   { value: "2A", label: "2° A" },
-  //   { value: "2B", label: "2° B" },
-  //   { value: "3A", label: "3° A" },
-  //   { value: "3B", label: "3° B" },
-  // ]
+  useEffect(() => {
+    setScheduleForCourse(schedule?.[selectedCourse]);
+  }, [selectedCourse, schedule]);  
 
   return (
     <div className="space-y-6">
@@ -376,7 +105,7 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
           <Tabs defaultValue="schedule" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-4">
               <TabsTrigger value="schedule">Horario</TabsTrigger>
-              <TabsTrigger value="details">Detalles de Asignación</TabsTrigger>
+              {/* <TabsTrigger style={{diplay: 'none'}} value="details">Detalles de Asignación</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="schedule" className="space-y-4">
@@ -391,62 +120,73 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
                 </div>
               </div>
 
-              <div className="rounded-md border overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[100px]">Hora</TableHead>
-                      {days?.map((day: string) => (
-                        <TableHead key={day}>{day}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {hours?.map((hour: string) => (
-                      <TableRow key={hour}>
-                        <TableCell className="font-medium">{hour}</TableCell>
-                        {/* {days.map((day: string) => {
-                          const cell = schedule[day][hour]
-                          // Check if this is a break period
-                          if (cell.isBreak) {
+              {scheduleForCourse ? (
+                <div className="rounded-md border overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[100px]">Hora</TableHead>
+                        {days?.map((day: string) => (
+                          <TableHead key={day}>{day}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {hours?.map((hour: string) => (
+                        <TableRow key={hour}>
+                          <TableCell className="font-medium">{hour}</TableCell>
+                          {days.map((day: string) => {
+                            const cell = scheduleForCourse?.[day]?.[hour];
+                            if (cell?.isBreak) {
+                              return (
+                                <TableCell
+                                  key={`${day}-${hour}`}
+                                  className="bg-muted/50 text-center font-medium"
+                                >
+                                  {cell.name}
+                                </TableCell>
+                              );
+                            }
+
+                            if (cell) {
+                              return (
+                                <TableCell
+                                  key={`${day}-${hour}`}
+                                  className={cn(
+                                    "p-2 cursor-pointer transition-colors",
+                                    cell.isNew && !cell.edited ? "bg-green-50 dark:bg-green-950/30" : "",
+                                    cell.edited ? "bg-amber-50 dark:bg-amber-950/30" : "",
+                                    editMode ? "hover:bg-muted" : "",
+                                  )}
+                                  onClick={() => editMode && handleEditCell(day, hour)}
+                                >
+                                  <div className="font-medium">{cell.subject}</div>
+                                  <div className="text-sm text-muted-foreground">{cell.teacher}</div>
+                                  <div className="flex justify-between">
+                                    <div className="text-xs text-muted-foreground">Aula: {cell.room}</div>
+                                  </div>
+                                </TableCell>
+                              );
+                            }
+
                             return (
                               <TableCell
                                 key={`${day}-${hour}`}
-                                className="bg-muted/50 text-center font-medium"
-                                colSpan={days.length}
+                                className="text-center text-muted-foreground"
                               >
-                                {cell.name}
+                                —
                               </TableCell>
-                            )
-                          }
+                            );
+                          })}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center text-muted-foreground p-4">Cargando horario...</div>
+              )}
 
-                          return (
-                            <TableCell
-                              key={`${day}-${hour}`}
-                              className={cn(
-                                "p-2 cursor-pointer transition-colors",
-                                cell.isNew && !cell.edited ? "bg-green-50 dark:bg-green-950/30" : "",
-                                cell.edited ? "bg-amber-50 dark:bg-amber-950/30" : "",
-                                editMode ? "hover:bg-muted" : "",
-                              )}
-                              onClick={() => editMode && handleEditCell(day, hour)}
-                            >
-                              <div className="font-medium">{cell.subject}</div>
-                              <div className="text-sm text-muted-foreground">{cell.teacher}</div>
-                              <div className="flex justify-between">
-                                <div className="text-xs text-muted-foreground">Aula: {cell.room}</div>
-                                <Badge variant="outline" className="text-xs">
-                                  {cell.points} pts
-                                </Badge>
-                              </div>
-                            </TableCell>
-                          )
-                        })} */}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
             </TabsContent>
 
             <TabsContent value="details" className="space-y-4">
@@ -654,38 +394,30 @@ export function AssignmentPreview({ onBack }: AssignmentPreviewProps) {
   )
 }
 
-function extraerHorasUnicas(horario: HorarioMock): string[] {
+function extraerHorasUnicas(data: HorarioMock): string[] {
   const horasSet = new Set<string>();
 
-  horario.resultado.forEach(curso => {
-    curso.asignaciones.forEach(asignacion => {
-      asignacion.data.forEach(item => {
-        if (item.bloque?.hora_inicio && item.bloque?.hora_fin) {
-          const inicio = new Date(item.bloque.hora_inicio);
-          const fin = new Date(item.bloque.hora_fin);
+  data.resultado.forEach((ch: CursoHorario) => {
+    ch.asignaciones.forEach((asignacion: AsignacionDia) => {
+      asignacion.data.forEach((bh: BloqueHorario) => {
+        const horaInicio = new Date(bh.bloque.hora_inicio);
+        const horaFin = new Date(bh.bloque.hora_fin);
 
-          // Formatear hora en formato HH:MM
-          const formato = (fecha: Date) => {
-            return fecha.toLocaleTimeString("es-ES", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false
-            });
-          };
-
-          const horaRango = `${formato(inicio)} - ${formato(fin)}`;
-          horasSet.add(horaRango);
-        }
-      });
+        const timeSlot = `${horaInicio.getHours()}:${horaInicio
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")} - ${horaFin.getHours()}:${horaFin
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`;
+          
+        horasSet.add(timeSlot)
+      })
     });
   });
-
-  return Array.from(horasSet).sort((a, b) => {
-    const horaA = a.split(" - ")[0];
-    const horaB = b.split(" - ")[0];
-    return horaA.localeCompare(horaB);
-  });
+    return Array.from(horasSet)
 }
+
 
 function extraerDiasUnicos(horario: HorarioMock): string[] {
   const diasSet = new Set<string>();
@@ -710,67 +442,65 @@ function extraerCursosUnicos(horario: HorarioMock): Curso[] {
   return Array.from(cursosSet);
 }
 
-function convertScheduleFromBackend(data: any, selectedCourse: string) {
-  const schedule: Record<string, any> = {};
+function convertAllSchedulesFromBackend(data: HorarioMock): Record<string, any> {
+  const allSchedules: Record<string, any> = {};
 
   const daysMap: Record<string, string> = {
     lunes: "Lunes",
     martes: "Martes",
-    miercoles: "Miércoles",
-    miércoles: "Miércoles",
+    miercoles: "Miercoles",
     jueves: "Jueves",
     viernes: "Viernes",
   };
 
-  const courseData = data.resultado.find(
-    (curso: Curso) => curso.nombre === selectedCourse
-  );
+  data.resultado.forEach((ch: CursoHorario) => {
+    const schedule: Record<string, any> = {};
 
-  if (!courseData) {
-    console.warn("Curso no encontrado:", selectedCourse);
-    return schedule;
-  }
+    ch.asignaciones.forEach((asignacion: AsignacionDia) => {
+      const day = daysMap[asignacion.dia.toLowerCase()];
+      if (!day) return;
 
-  courseData.asignaciones.forEach((asignacion: AsignacionDia) => {
-    const day = daysMap[asignacion.dia.toLowerCase()];
-    if (!day) return;
+      schedule[day] = schedule[day] || {};
 
-    schedule[day] = schedule[day] || {};
+      asignacion.data.forEach((bh: BloqueHorario) => {
+        const horaInicio = new Date(bh.bloque.hora_inicio);
+        const horaFin = new Date(bh.bloque.hora_fin);
 
-    asignacion.data.forEach((bloque: BloqueHorario) => {
-      const horaInicio = new Date(bloque.bloque.hora_inicio);
-      const horaFin = new Date(bloque.bloque.hora_fin);
+        const timeSlot = `${horaInicio.getHours()}:${horaInicio
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")} - ${horaFin.getHours()}:${horaFin
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`;
 
-      const timeSlot = `${horaInicio.getHours()}:${horaInicio
-        .getMinutes()
-        .toString()
-        .padStart(2, "0")} - ${horaFin.getHours()}:${horaFin
-        .getMinutes()
-        .toString()
-        .padStart(2, "0")}`;
-
-      if (bloque.bloque.tipo === "receso" || bloque.materia == null) {
-        schedule[day][timeSlot] = {
-          isBreak: true,
-          name: "RECESO",
-        };
-      } else if (bloque.bloque.tipo === "almuerzo" || bloque.materia == null) {
-        schedule[day][timeSlot] = {
-          isBreak: true,
-          name: "ALMUERZO",
-        };
-      } else {
-        schedule[day][timeSlot] = {
-          teacher: bloque.docente?.persona.nombre + ' ' + bloque.docente?.persona.apellido, // Puedes mapearlo desde otra fuente si no lo tienes en el bloque
-          subject: bloque.materia.nombre,
-          room: bloque.aula?.nombre,
-          course: selectedCourse,
-          isNew: true,
-          points: 0, // Puedes asignar otro valor o quitarlo si no aplica
-        };
-      }
+        if (bh.bloque.tipo === "receso") {
+          schedule[day][timeSlot] = {
+            isBreak: true,
+            name: "RECESO",
+          };
+        } else if (bh.bloque.tipo === "almuerzo" || bh.materia == null) {
+          schedule[day][timeSlot] = {
+            isBreak: true,
+            name: "ALMUERZO",
+          };
+        } else {
+          schedule[day][timeSlot] = {
+            teacher: `${bh.docente?.persona?.nombre} ${bh.docente?.persona?.apellido}`,
+            subject: bh.materia.nombre,
+            room: bh.aula?.nombre,
+            course: ch.curso.nombre,
+            isNew: true,
+            points: 0,
+          };
+        }
+      });
     });
+
+    allSchedules[ch.curso.nombre] = schedule;
   });
 
-  return schedule;
+  console.log(505,allSchedules)
+  return allSchedules;
 }
+

@@ -28,9 +28,7 @@ export class HorarioService {
         where: { fk_id_curso: cursoId },
         include: { materia: true },
       });
-  
-      const conteoMaterias = new Map<number, number>();
-  
+      
       for (const dia of dto.dias) {
         const horario = horarios.find(h => h.dia === dia);
         const bloqueDatas: any[] = [];
@@ -50,9 +48,9 @@ export class HorarioService {
 
           if(bloque.tipo === tipo_bloque.clase) {
               // Elegir materia menos repetida
-              const materia = cursoMaterias
-                .map(cm => cm.materia)
-                .sort((a, b) => (conteoMaterias.get(a.pk_id) || 0) - (conteoMaterias.get(b.pk_id) || 0))[0];
+              const materias = cursoMaterias.map(cm => cm.materia);
+              const materia = materias[Math.floor(Math.random() * materias.length)];
+
               const docente = await this.builder.seleccionarDocente(materia.pk_id, dto.criterios.docente, horario.pk_id, bloque.pk_id);
               const aula = await this.builder.seleccionarAula(materia, dto.criterios.aula, horario, bloque);
       
@@ -79,7 +77,7 @@ export class HorarioService {
                   fk_id_horario: horario.pk_id,
                   esta_activo: true,
                   OR: [
-                    { fk_id_docente: docente.datos.pk_id },
+                    { fk_id_docente: docente.pk_id },
                     { fk_id_aula: aula.pk_id },
                     { fk_id_curso: cursoId }
                   ]
@@ -117,9 +115,7 @@ export class HorarioService {
                   }),
                 }
               });
-      
-              conteoMaterias.set(materia.pk_id, (conteoMaterias.get(materia.pk_id) || 0) + 1);
-      
+            
               bloqueDatas.push({
                 bloque,
                 docente,

@@ -116,11 +116,7 @@ let HorarioBuilderService = class HorarioBuilderService {
                 persona: true
             }
         });
-        const mejorOpcion = {
-            datos: mejorDocente,
-            puntaje: mejor?.puntaje
-        };
-        return mejorOpcion ?? null;
+        return mejorDocente ?? null;
     }
     async seleccionarAula(materia, criterios, horario, bloque) {
         const condiciones = {};

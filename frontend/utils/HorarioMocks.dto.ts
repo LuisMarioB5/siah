@@ -9,7 +9,7 @@ export interface Curso {
     descripcion: string | null;
 }
 
-interface CursoHorario {
+export interface CursoHorario {
     curso: Curso;
     asignaciones: AsignacionDia[];
 }
